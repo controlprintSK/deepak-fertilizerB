@@ -12,7 +12,7 @@ import {
   Table,
 } from "antd";
 import MainLayout from "@/app/components/MainLayout";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import {
   DeleteOutlined,
   DownOutlined,
@@ -24,13 +24,13 @@ const { RangePicker } = DatePicker;
 
 export default function BranchTransfer() {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
-
+  const route = useRouter();
   const toggleFilters = () => {
     setShowMoreFilters((prev) => !prev);
   };
 
   const handleOpenPage = () => {
-    redirect("/transaction/branch-transfer-add");
+    route.push("/transaction/branch-transfer-add");
   };
 
   const columns = [

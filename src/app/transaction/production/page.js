@@ -18,12 +18,15 @@ import {
   DeleteOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+
 const { RangePicker } = DatePicker;
 
 export default function Production() {
+  const route = useRouter();
   const handleOpenPage = () => {
-    redirect("/transaction/production-add");
+    // redirect("/transaction/production-add");
+    route.push("/transaction/production-add");
   };
   const columns = [
     {
