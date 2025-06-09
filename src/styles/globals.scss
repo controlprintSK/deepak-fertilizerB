@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+// --------------------------
+:root {
+  --background-rgb: 255, 255, 255;
+  --foreground-rgb: 0, 0, 0;
+  --foreground-light-rgb: 148, 148, 148;
+  // -------
+  --font-robo: "Roboto", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  // -------
+  --font-size: 0.85rem;
+  --font-size-s: 0.75rem;
+  --font-size-l: 1rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
+  //   ================
+  --color-primary-rgb: 250, 58, 92;
+  --color-primary-dark-rgb: 15, 97, 144;
+  --color-primary-dark-light-rgb: 42, 150, 213;
+  --color-secondary-rgb: 0, 0, 0;
+  --color-secondary-dark-rgb: 196, 0, 21;
+  --color-white-rgb: 255, 255, 255;
+  --color-black-rgb: 0, 0, 0;
+  --color-gray-rgb: 128, 128, 128;
+  ----color-gray-light-rgb: 233, 233, 233;
+  ----color-gray-dark-rgb: 192, 192, 192;
+  --color-link-rgb: 28, 81, 195;
+  --color-text-rgb: 85, 85, 85;
+  --color-border-rgb: 225, 225, 225;
+  --color-border-modal-rgb: 196, 212, 221;
+  --color-danger-rgb: 255, 77, 79;
+  //   ================
+  --border-color-rgb: 217, 217, 217;
+  --border-color-grid-rgb: 225, 221, 221;
+  --border-size: 1px;
+  --border-radius: 1rem;
+  //   ================
+  --control-border-radius: 5px;
+  --grid-border-radius: 10px;
+  //   ================
+  --card-border-rgb: 217, 217, 217;
+  --card-border-size: 1px;
+  --card-border-radius: 0.75rem;
+  //   ================
+  --table-header-color-rgb: 250, 58, 92;
+  //   ================
+  --box-shadow: 0 1px 15px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.04);
+  --box-shadow-heigh: 0 3px 20px rgba(0, 0, 0, 0.1), 0 3px 10px rgba(0, 0, 0, 0.1);
+  --color-shadow: 0 0px 4px rgba(15, 34, 58, 0.12);
+  --dashboard-box-shadow: 0 1px 2px rgba(56, 65, 74, 0.15);
+  --dashboard-box-padding: 20px;
+  --dashboard-border-radius: 6px;
+}
+
+// @media (prefers-color-scheme: dark) {
+//   :root {
+//     --background-rgb: 0, 0, 0;
+//     --foreground-rgb: 255, 255, 255;
+//   }
+// }
+
+// @media (prefers-color-scheme: light) {
+//   :root {
+//     --background-rgb: 230, 236, 246;
+//     --foreground-rgb: 0, 0, 0;
+//   }
+// }
+
+// @media (prefers-color-scheme: dark) {
+//   html {
+//     color-scheme: dark;
+//   }
+// }
