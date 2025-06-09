@@ -1,11 +1,12 @@
-import { configureStore } from '@reduxjs/toolkit';
-import logger from 'redux-logger';
-import { persistReducer } from 'redux-persist';
-import { combineReducers } from 'redux';
-import userSlice from '../redux/userSlice';
-import createWebStorage from 'redux-persist/es/storage/createWebStorage';
-import rightSlice from '../redux/rightSlice';
-import utilitiesListSlice from '../redux/utilitiesSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import logger from "redux-logger";
+import { persistReducer } from "redux-persist";
+import { combineReducers } from "redux";
+import userSlice from "../redux/userSlice";
+import createWebStorage from "redux-persist/es/storage/createWebStorage";
+import rightSlice from "../redux/rightSlice";
+import utilitiesListSlice from "../redux/utilitiesSlice";
+import navBarSlice from "../redux/navBarSlice";
 import {
   FLUSH,
   REHYDRATE,
@@ -13,11 +14,11 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from 'redux-persist';
+} from "redux-persist";
 
 // Custom storage handler for server-side rendering support
 function createPersistStore() {
-  const isServer = typeof window === 'undefined';
+  const isServer = typeof window === "undefined";
   if (isServer) {
     return {
       getItem: async () => null,
@@ -25,7 +26,7 @@ function createPersistStore() {
       removeItem: async () => {},
     };
   } else {
-    return createWebStorage('local');
+    return createWebStorage("local");
   }
 }
 
@@ -33,7 +34,7 @@ const storage = createPersistStore();
 
 // Redux Persist config
 const persistConfig = {
-  key: 'root',
+  key: "root",
   version: 1,
   storage,
 };
@@ -43,6 +44,7 @@ const rootReducer = combineReducers({
   userInfo: userSlice,
   rightInfo: rightSlice,
   utilities: utilitiesListSlice,
+  navBarInfo: navBarSlice,
 });
 
 //  Wrap reducers with persistence

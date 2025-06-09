@@ -54,6 +54,8 @@ export default function MainLayout(props) {
   const [defaultSelectedKey, setDefaultSelectedKey] = useState([]);
   const [defaultExpandedKey, setDefaultExpandedKey] = useState([]);
 
+  console.log("userModules :>> ", userModules);
+
   const IconRenderer = ({ iconName }) => {
     const IconComponent = Icons[iconName];
 
@@ -117,7 +119,7 @@ export default function MainLayout(props) {
                     {page?.DisplayName}
                   </Link>
                 ),
-                key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
+                key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
               });
               if (ind == 0 && ind2 == 0) {
                 setDefaultSelectedKey([
@@ -128,7 +130,7 @@ export default function MainLayout(props) {
                   dispatch(
                     selectNavReducer({
                       value: `PAGE_${page?.PageId}`,
-                      activePage: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
+                      activePage: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
                     })
                   );
                 }
@@ -146,7 +148,7 @@ export default function MainLayout(props) {
                   {page?.DisplayName}
                 </Link>
               ),
-              key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
+              key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
             });
           }
         });

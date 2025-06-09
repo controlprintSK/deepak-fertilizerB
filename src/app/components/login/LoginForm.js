@@ -51,29 +51,20 @@ export default function LoginForm({ setForgotPasswordForm }) {
   const onFinishLogin = async (values) => {
     setDataLoading(true);
     try {
-      let finalForgotPasswordData =
-        userType == "1"
-          ? {
-              CompanyCode: String(values?.CompanyCode).toUpperCase(),
-              UserName: String(values?.userName).toLowerCase(),
-              Password: values?.password,
-            }
-          : {
-              UserName: String(values?.userName).toLowerCase(),
-              Password: values?.password,
-            };
+      let finalUserData = {
+        CompanyCode: String(values?.CompanyCode).toUpperCase(),
+        UserName: String(values?.userName).toLowerCase(),
+        Password: values?.password,
+      };
 
-      // let url = userType == '1' ? LOGINWITHCOMPANY : LOGIN;
-      let res = await postAPI(LOGIN, finalForgotPasswordData, {
-        company: values?.CompanyCode
-          ? String(values?.CompanyCode).toUpperCase()
-          : "",
-      });
+      let res = await postAPI(LOGIN, finalUserData);
       if (res?.status == 200) {
         displayMessage(SUCCESS_MSG_TYPE, res?.message);
 
         var decoded = jwt.decode(res?.data?.access?.token);
         let pageRight = decoded?.pageRights;
+
+        console.log("decoded :>> ", decoded);
 
         dispatch(
           userSuccess({
@@ -137,81 +128,6 @@ export default function LoginForm({ setForgotPasswordForm }) {
     <>
       <h1 className="qc_mb_3">Login</h1>
       <Spin spinning={dataLoading}>
-        {/* <Form
-          name="basic"
-          layout={'vertical'}
-          autoComplete="off"
-          onFinish={handleOnSubmit}
-        >
-          <Form.Item
-            label="Plant ID"
-            name="plant_id"
-            rules={[
-              {
-                required: true,
-                message: 'Please enter your Plant ID!',
-              },
-            ]}
-          >
-            <Input
-              style={{ textTransform: 'uppercase' }}
-              type="text"
-              className={`${styles.inputText}`}
-              size="large"
-            />
-          </Form.Item>
-          <Form.Item
-            label="User ID"
-            name="UserName"
-            rules={[
-              {
-                required: true,
-                message: 'Please enter your User ID!',
-              },
-              {
-                min: 2,
-                message: 'User ID must be at least 2 characters long!',
-              },
-              {
-                max: 30,
-                message: 'User ID cannot exceed 30 characters!',
-              },
-            ]}
-          >
-            <Input type="text" className={`${styles.inputText}`} size="large" />
-          </Form.Item>
-
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: 'Please enter your password!',
-              },
-            ]}
-          >
-            <Input.Password
-              name="password"
-              className={`${styles.inputText}`}
-              size="large"
-            />
-          </Form.Item>
-          <div className="text_right qc_mb_5 text_right">
-            <Button
-              onClick={onClickForgotPassword}
-              className={`link ${styles.forgot__link}`}
-              type="link"
-            >
-              Forgot Password ?
-            </Button>
-          </div>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" size="large" block>
-              Login
-            </Button>
-          </Form.Item>
-        </Form> */}
         <Form
           name="basic"
           layout={"vertical"}
@@ -222,43 +138,22 @@ export default function LoginForm({ setForgotPasswordForm }) {
           onFinishFailed={onFinishLoginFailed}
           autoComplete="off"
         >
-          <Form.Item name="userType">
-            <Select
-              placeholder="UserType"
+          <Form.Item
+            name="CompanyCode"
+            rules={[
+              {
+                required: true,
+                message: "Please enter Plant ID",
+              },
+            ]}
+          >
+            <Input
+              style={{ textTransform: "uppercase" }}
+              placeholder="Plant ID"
+              className={`${styles.inputText}`}
               size="large"
-              onChange={(value) => setUserType(value)} // Update userType state on change
-              // defaultValue={'1'}
-              options={[
-                {
-                  value: "1",
-                  label: "Company",
-                },
-                {
-                  value: "2",
-                  label: "SuperAdmin",
-                },
-              ]}
             />
           </Form.Item>
-
-          {userType === "1" && (
-            <Form.Item
-              name="CompanyCode"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter Company Code",
-                },
-              ]}
-            >
-              <Input
-                style={{ textTransform: "uppercase" }}
-                placeholder="Company Code"
-                className={`${styles.inputText}`}
-                size="large"
-              />
-            </Form.Item>
-          )}
 
           <Form.Item
             name="userName"
