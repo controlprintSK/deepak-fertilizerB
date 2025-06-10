@@ -119,7 +119,7 @@ export default function MainLayout(props) {
                     {page?.DisplayName}
                   </Link>
                 ),
-                key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
+                key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
               });
               if (ind == 0 && ind2 == 0) {
                 setDefaultSelectedKey([
@@ -130,7 +130,7 @@ export default function MainLayout(props) {
                   dispatch(
                     selectNavReducer({
                       value: `PAGE_${page?.PageId}`,
-                      activePage: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
+                      activePage: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
                     })
                   );
                 }
@@ -148,7 +148,7 @@ export default function MainLayout(props) {
                   {page?.DisplayName}
                 </Link>
               ),
-              key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
+              key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
             });
           }
         });

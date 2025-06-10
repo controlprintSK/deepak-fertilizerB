@@ -53,8 +53,8 @@ export default function LoginForm({ setForgotPasswordForm }) {
     try {
       let finalUserData = {
         CompanyCode: String(values?.CompanyCode).toUpperCase(),
-        UserName: String(values?.userName).toLowerCase(),
-        Password: values?.password,
+        UserName: String(values?.UserName).toLowerCase(),
+        Password: values?.Password,
       };
 
       let res = await postAPI(LOGIN, finalUserData);
@@ -152,11 +152,12 @@ export default function LoginForm({ setForgotPasswordForm }) {
               placeholder="Plant ID"
               className={`${styles.inputText}`}
               size="large"
+              name="CompanyCode"
             />
           </Form.Item>
 
           <Form.Item
-            name="userName"
+            name="UserName"
             rules={[
               {
                 required: true,
@@ -167,13 +168,13 @@ export default function LoginForm({ setForgotPasswordForm }) {
             <Input
               placeholder="user name"
               className={`${styles.inputText}`}
-              autoComplete="new-password"
               size="large"
+              name="UserName"
               onInput={(e) => (e.target.value = e.target.value.toLowerCase())}
             />
           </Form.Item>
           <Form.Item
-            name="password"
+            name="Password"
             rules={[
               {
                 required: true,
@@ -186,6 +187,7 @@ export default function LoginForm({ setForgotPasswordForm }) {
               className={styles.inputText}
               autoComplete="new-password"
               size="large"
+              name="Password"
             />
           </Form.Item>
           <Form.Item>
