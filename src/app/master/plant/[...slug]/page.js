@@ -35,7 +35,7 @@ import {
   interpolate,
   searchPincode,
 } from "@/utils/common";
-import { deleteAPI, postAPI, putAPI } from "@/utils/apiRequest";
+import { deleteAPI, getAPI, postAPI, putAPI } from "@/utils/apiRequest";
 import { ERROR_MSG_TYPE, SUCCESS_MSG_TYPE } from "@/constants/hardData";
 import { DeleteButton, EditButton } from "@/app/components/common/Button";
 import { setCompanyList } from "@/redux/utilitiesSlice";
@@ -104,23 +104,22 @@ export default function PlantAdd() {
       if (res?.status == 200) {
         const companyData = res?.data[0];
         form.setFieldsValue({
-          CompanyCode: companyData?.CompanyCode,
-          CompanyName: companyData?.CompanyName,
-          CompanyGroup: companyData?.CompanyGroup,
+          PlantCode: companyData?.CompanyCode,
+          PlantName: companyData?.CompanyName,
           Address: companyData?.Address,
           City: companyData?.City,
           State: companyData?.State,
           Country: companyData?.Country,
           PinCode: companyData?.PinCode,
           LicenseNo: companyData?.LicenseNo,
-          CompanyType: companyData?.CompanyType,
+          PlantType: companyData?.CompanyType,
           IpAddress: companyData?.IpAddress,
           Active: companyData?.Active,
         });
         let _contactData = companyData.ContactDetails.map((item, index) => ({
           key: index.toString(),
-          _id: item._id,
-          CompanyCode: item.CompanyCode,
+          _id: item.id,
+          PlantCode: item.CompanyCode,
           Name: item.Name,
           ContactNo: item.ContactNo,
           Email: item.Email,
@@ -347,7 +346,7 @@ export default function PlantAdd() {
           <>
             <Space>
               <EditButton
-                pageId={20}
+                pageId={21}
                 rightId={3}
                 _function={() => {
                   handleEdit(record);
@@ -355,8 +354,8 @@ export default function PlantAdd() {
                 _size="small"
               />
               <DeleteButton
-                pageId={20}
-                rightId={3}
+                pageId={21}
+                rightId={4}
                 _function={() => {
                   handleDelete(record?._id, record.key);
                 }}
@@ -390,7 +389,18 @@ export default function PlantAdd() {
     let res;
     try {
       if (slug && slug.length > 0 && slug[0] == "edit") {
-        const formObj = values;
+        const formObj = {
+          CompanyCode: values?.PlantCode,
+          CompanyName: values?.PlantName,
+          Address: values?.Address,
+          City: values?.City,
+          State: values?.State,
+          Country: values?.Country,
+          PinCode: values?.PinCode,
+          LicenseNo: values?.LicenseNo,
+          CompanyType: values?.PlantType,
+          Active: values?.Active,
+        };
         res = await putAPI(UPDATE_COMPANY, formObj);
       } else {
         res = await postAPI(ADD_COMPANY, formattedData);

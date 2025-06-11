@@ -51,13 +51,23 @@ export default function LoginForm({ setForgotPasswordForm }) {
   const onFinishLogin = async (values) => {
     setDataLoading(true);
     try {
-      let finalUserData = {
-        CompanyCode: String(values?.CompanyCode).toUpperCase(),
-        UserName: String(values?.userName).toLowerCase(),
-        Password: values?.password,
-      };
+      let finalUserData =
+        userType == "1"
+          ? {
+              CompanyCode: String(values?.PlantCode).toUpperCase(),
+              UserName: String(values?.userName).toLowerCase(),
+              Password: values?.password,
+            }
+          : {
+              UserName: String(values?.userName).toLowerCase(),
+              Password: values?.password,
+            };
 
-      let res = await postAPI(LOGIN, finalUserData);
+      let res = await postAPI(LOGIN, finalUserData, {
+        company: values?.CompanyCode
+          ? String(values?.CompanyCode).toUpperCase()
+          : "",
+      });
       if (res?.status == 200) {
         displayMessage(SUCCESS_MSG_TYPE, res?.message);
 
@@ -138,7 +148,45 @@ export default function LoginForm({ setForgotPasswordForm }) {
           onFinishFailed={onFinishLoginFailed}
           autoComplete="off"
         >
-          <Form.Item
+          <Form.Item name="userType">
+            <Select
+              placeholder="UserType"
+              size="large"
+              onChange={(value) => setUserType(value)} // Update userType state on change
+              // defaultValue={'1'}
+              options={[
+                {
+                  value: "1",
+                  label: "Plant",
+                },
+                {
+                  value: "2",
+                  label: "SuperAdmin",
+                },
+              ]}
+            />
+          </Form.Item>
+
+          {userType === "1" && (
+            <Form.Item
+              name="PlantCode"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter Plant Code",
+                },
+              ]}
+            >
+              <Input
+                style={{ textTransform: "uppercase" }}
+                placeholder="Plant Code"
+                className={`${styles.inputText}`}
+                size="large"
+              />
+            </Form.Item>
+          )}
+
+          {/* <Form.Item
             name="CompanyCode"
             rules={[
               {
@@ -153,7 +201,7 @@ export default function LoginForm({ setForgotPasswordForm }) {
               className={`${styles.inputText}`}
               size="large"
             />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item
             name="userName"

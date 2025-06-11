@@ -27,7 +27,6 @@ import {
   UserSwitchOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-
 import { Image, Spin, Tree } from "antd";
 import Header from "./Header";
 import Link from "next/link";
@@ -39,6 +38,7 @@ import { LOGOUT } from "../api";
 import { postAPI } from "@/utils/apiRequest";
 import { ERROR_MSG_TYPE, SUCCESS_MSG_TYPE } from "@/constants/hardData";
 import { displayMessage } from "@/utils/common";
+import { selectNavReducer } from "@/redux/navBarSlice";
 
 const { DirectoryTree } = Tree;
 
@@ -96,114 +96,231 @@ export default function MainLayout(props) {
     }
   };
 
+  // useEffect(() => {
+  //   let sidemenu = [];
+  //   userModules?.forEach((module, ind) => {
+  //     let pageitem = [];
+  //     if (module?.pages && module?.pages.length) {
+  //       pageitem = [];
+  //       module?.pages?.forEach((page, ind2) => {
+  //         if (
+  //           (user.UserRole == "VIEWER" || "superadmin") &&
+  //           !user?.CurrentCompany
+  //         ) {
+  //           if ([10, 20, 30, 40, 33, 34, 50, 51]?.includes(page?.PageId)) {
+  //             pageitem.push({
+  //               title: (
+  //                 <Link
+  //                   className="menu-link"
+  //                   data-pageid={page?.PageId}
+  //                   data-rights={JSON.stringify(page?.Rights)}
+  //                   href={page?.PageUrl}
+  //                 >
+  //                   {page?.DisplayName}
+  //                 </Link>
+  //               ),
+  //               key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
+  //             });
+  //             if (ind == 0 && ind2 == 0) {
+  //               setDefaultSelectedKey([
+  //                 `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
+  //               ]);
+  //               setDefaultExpandedKey([`MODULE_${module?.ModuleId}`]);
+  //               if (!navBarInfo["ACTIVE_PAGE"]) {
+  //                 dispatch(
+  //                   selectNavReducer({
+  //                     value: `PAGE_${page?.PageId}`,
+  //                     activePage: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
+  //                   })
+  //                 );
+  //               }
+  //             }
+  //           }
+  //         } else {
+  //           pageitem.push({
+  //             title: (
+  //               <Link
+  //                 className="menu-link"
+  //                 data-pageid={page?.PageId}
+  //                 data-rights={JSON.stringify(page?.Rights)}
+  //                 href={page?.PageUrl}
+  //               >
+  //                 {page?.DisplayName}
+  //               </Link>
+  //             ),
+  //             key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
+  //           });
+  //         }
+  //       });
+  //       // .filter(Boolean); // Remove undefined
+  //     }
+
+  //     if (
+  //       (user.UserRole == "VIEWER" || "superadmin") &&
+  //       !user?.CurrentCompany
+  //     ) {
+  //       if ([1, 2, 3, 4, 5, 7]?.includes(module?.ModuleId)) {
+  //         sidemenu.push({
+  //           title: module?.ModuleName,
+  //           key: "module_" + module?.ModuleId,
+  //           children: pageitem,
+  //         });
+  //       }
+  //     } else {
+  //       sidemenu.push({
+  //         title: module?.ModuleName,
+  //         // key: 'module_' + module?.ModuleId,
+  //         key: `MODULE_${module?.ModuleId}`,
+  //         children: pageitem,
+  //         icon: <IconRenderer iconName={module?.Icon} />,
+  //       });
+  //     }
+  //   });
+
+  //   setTreeDataMainMenu(sidemenu);
+  // }, [JSON.stringify(userModules)]);
+
   useEffect(() => {
-    let sidemenu = [];
-    userModules?.forEach((module, ind) => {
-      let pageitem = [];
-      if (module?.pages && module?.pages.length) {
-        pageitem = [];
-        module?.pages?.forEach((page, ind2) => {
-          if (
-            (user.UserRole == "VIEWER" || "superadmin") &&
-            !user?.CurrentCompany
-          ) {
-            if ([10, 20, 30, 40, 33, 34, 50, 51]?.includes(page?.PageId)) {
-              pageitem.push({
-                title: (
-                  <Link
-                    className="menu-link"
-                    data-pageid={page?.PageId}
-                    data-rights={JSON.stringify(page?.Rights)}
-                    href={page?.PageUrl}
-                  >
-                    {page?.DisplayName}
-                  </Link>
-                ),
-                key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
-              });
-              if (ind == 0 && ind2 == 0) {
-                setDefaultSelectedKey([
-                  `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
-                ]);
-                setDefaultExpandedKey([`MODULE_${module?.ModuleId}`]);
-                if (!navBarInfo["ACTIVE_PAGE"]) {
-                  dispatch(
-                    selectNavReducer({
-                      value: `PAGE_${page?.PageId}`,
-                      activePage: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
-                    })
-                  );
-                }
-              }
-            }
-          } else {
-            pageitem.push({
-              title: (
-                <Link
-                  className="menu-link"
-                  data-pageid={page?.PageId}
-                  data-rights={JSON.stringify(page?.Rights)}
-                  href={page?.PageUrl}
-                >
-                  {page?.DisplayName}
-                </Link>
-              ),
-              key: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}_${ind}_${ind2}`,
+    const buildPageTree = (pages, moduleId, moduleIndex, parentKey = "") => {
+      return pages?.map((page, index) => {
+        const key = `MODULE_${moduleId}-PAGE_${page?.PageId}_${moduleIndex}_${index}`;
+        const pageNode = {
+          title: (
+            <Link
+              className="menu-link"
+              data-pageid={page?.PageId}
+              data-rights={JSON.stringify(page?.Rights)}
+              href={page?.PageUrl}
+            >
+              {page?.DisplayName}
+            </Link>
+          ),
+          key,
+        };
+
+        if (page.pages && page.pages.length > 0) {
+          pageNode.children = buildPageTree(
+            page.pages,
+            moduleId,
+            moduleIndex,
+            key
+          );
+        }
+
+        // Set default selected and expanded keys for the first valid page
+        if (moduleIndex === 0 && index === 0 && !navBarInfo["ACTIVE_PAGE"]) {
+          setDefaultSelectedKey([key]);
+          setDefaultExpandedKey([`MODULE_${moduleId}`]);
+          dispatch(
+            selectNavReducer({
+              value: `PAGE_${page?.PageId}`,
+              activePage: key,
+            })
+          );
+        }
+
+        return pageNode;
+      });
+    };
+
+    const buildMenu = () => {
+      let sidemenu = [];
+
+      userModules?.forEach((module, moduleIndex) => {
+        const pageItems = buildPageTree(
+          module?.pages || [],
+          module?.ModuleId,
+          moduleIndex
+        );
+
+        const isRestrictedUser =
+          (user?.UserRole === "VIEWER" || user?.UserRole === "superadmin") &&
+          !user?.CurrentCompany;
+
+        if (isRestrictedUser) {
+          if ([1, 2, 3, 4, 5, 7]?.includes(module?.ModuleId)) {
+            sidemenu.push({
+              title: module?.ModuleName,
+              key: `MODULE_${module?.ModuleId}`,
+              children: pageItems,
             });
           }
-        });
-        // .filter(Boolean); // Remove undefined
-      }
-
-      if (
-        (user.UserRole == "VIEWER" || "superadmin") &&
-        !user?.CurrentCompany
-      ) {
-        if ([1, 2, 3, 4, 5, 7]?.includes(module?.ModuleId)) {
+        } else {
           sidemenu.push({
             title: module?.ModuleName,
-            key: "module_" + module?.ModuleId,
-            children: pageitem,
+            key: `MODULE_${module?.ModuleId}`,
+            icon: <IconRenderer iconName={module?.Icon} />,
+            children: pageItems,
           });
         }
-      } else {
-        sidemenu.push({
-          title: module?.ModuleName,
-          // key: 'module_' + module?.ModuleId,
-          key: `MODULE_${module?.ModuleId}`,
-          children: pageitem,
-          icon: <IconRenderer iconName={module?.Icon} />,
-        });
-      }
-    });
+      });
 
-    setTreeDataMainMenu(sidemenu);
+      return sidemenu;
+    };
+
+    setTreeDataMainMenu(buildMenu());
   }, [JSON.stringify(userModules)]);
 
-  const onMenuExpand = (keys, info) => {
-    let key = String(info?.node?.key)?.split("-")[0];
-    setDefaultExpandedKey([key]);
+  // const onMenuExpand = (keys, info) => {
+  //   let key = String(info?.node?.key)?.split("-")[0];
+  //   setDefaultExpandedKey([key]);
+  // };
+  const onMenuExpand = (keys) => {
+    setDefaultExpandedKey(keys); // AntD gives full expanded keys array
   };
 
+  // const onMenuSelect = (keys, info) => {
+  //   setDefaultSelectedKey([info?.node?.key]);
+  //   let selectedMenu = String(info?.node?.key)?.split("-");
+  //   if (selectedMenu?.length > 1) {
+  //     dispatch(
+  //       selectNavReducer({
+  //         value: selectedMenu[1],
+  //         activePage: info?.node?.key,
+  //       })
+  //     );
+  //   }
+  // };
   const onMenuSelect = (keys, info) => {
-    setDefaultSelectedKey([info?.node?.key]);
-    let selectedMenu = String(info?.node?.key)?.split("-");
+    const selectedKey = info?.node?.key;
+    setDefaultSelectedKey([selectedKey]);
+
+    const selectedMenu = selectedKey?.split("-");
+
     if (selectedMenu?.length > 1) {
       dispatch(
         selectNavReducer({
-          value: selectedMenu[1],
-          activePage: info?.node?.key,
+          value: selectedMenu[selectedMenu.length - 1], // last part like PAGE_29_x_x
+          activePage: selectedKey,
         })
       );
     }
   };
 
+  // useEffect(() => {
+  //   if (navBarInfo["ACTIVE_PAGE"]) {
+  //     let keys = String(navBarInfo["ACTIVE_PAGE"])?.split("-");
+  //     setDefaultExpandedKey([keys[0]]);
+  //     let activePage = String(navBarInfo["ACTIVE_PAGE"]).replace("_ADD", "");
+  //     setDefaultSelectedKey([activePage]);
+  //   } else {
+  //     setDefaultExpandedKey([]);
+  //     setDefaultSelectedKey([]);
+  //   }
+  // }, [JSON.stringify(navBarInfo)]);
   useEffect(() => {
     if (navBarInfo["ACTIVE_PAGE"]) {
-      let keys = String(navBarInfo["ACTIVE_PAGE"])?.split("-");
-      setDefaultExpandedKey([keys[0]]);
-      let activePage = String(navBarInfo["ACTIVE_PAGE"]).replace("_ADD", "");
-      setDefaultSelectedKey([activePage]);
+      const fullKey = String(navBarInfo["ACTIVE_PAGE"]).replace("_ADD", "");
+      const segments = fullKey.split("-"); // ['MODULE_6', 'PAGE_28_5_0', 'PAGE_29_5_0']
+
+      // All but the last key should be expanded
+      const expandedKeys = segments.slice(0, -1).reduce((acc, curr, i) => {
+        acc.push(segments.slice(0, i + 1).join("-"));
+        return acc;
+      }, []);
+
+      setDefaultExpandedKey(expandedKeys);
+      setDefaultSelectedKey([fullKey]);
     } else {
       setDefaultExpandedKey([]);
       setDefaultSelectedKey([]);
