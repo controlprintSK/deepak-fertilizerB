@@ -33,6 +33,12 @@
       }
     ]
   },
-  "include": ["**/*.js", "**/*.jsx", "next-env.d.ts", "next.config.mjs"],
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "next-env.d.ts",
+    "next.config.mjs",
+    "jest.config.mjs"
+  ],
   "exclude": ["node_modules"]
 }

@@ -8,6 +8,7 @@ node_modules/
 dist/
 .next/
 package-lock.json
+coverage/
 
 # Compiled Java class files
 *.class

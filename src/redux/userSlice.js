@@ -1,21 +1,21 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   user: {},
-  error: '',
+  error: "",
   isAuth: false,
-  accessToken: '',
-  refreshToken: '',
+  accessToken: "",
+  refreshToken: "",
 };
 
 const userSlice = createSlice({
-  name: 'userInfo',
+  name: "userInfo",
   initialState,
   reducers: {
     userSuccess: (state, { payload }) => {
       state.user = payload?.user;
       state.isAuth = true;
-      state.error = '';
+      state.error = "";
     },
     setAccessToken: (state, { payload }) => {
       state.accessToken = payload?.accessToken;
@@ -38,10 +38,10 @@ const userSlice = createSlice({
     },
     userClear: (state) => {
       state.isAuth = false;
-      state.error = '';
+      state.error = "";
       state.user = {};
-      state.accessToken = '';
-      state.refreshToken = '';
+      state.accessToken = "";
+      state.refreshToken = "";
     },
   },
 });
@@ -57,8 +57,8 @@ export const {
   setRefreshToken,
 } = userSlice.actions;
 
-export const accessToken = (state) => state.userInfo.accessToken;
-export const refreshToken = (state) => state.userInfo.refreshToken;
-export const dbcode = (state) => state.userInfo.user.CurrentCompany;
+export const accessToken = (state) => state?.userInfo?.accessToken;
+export const refreshToken = (state) => state?.userInfo?.refreshToken;
+export const dbcode = (state) => state?.userInfo?.user?.CurrentCompany;
 
 export default userSlice.reducer;

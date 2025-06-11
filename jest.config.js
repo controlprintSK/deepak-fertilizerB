@@ -19,7 +19,9 @@ const customJestConfig = {
     "<rootDir>/config/",
     "<rootDir>/jest.setup.js",
   ],
-
+  transformIgnorePatterns: [
+    "node_modules/(?!redux-persist|@reduxjs/toolkit|react-redux)",
+  ],
   moduleNameMapper: {
     "^@/components/(.*)$": "<rootDir>/src/app/components/$1",
     "^@/app/(.*)$": "<rootDir>/src/app/$1",
