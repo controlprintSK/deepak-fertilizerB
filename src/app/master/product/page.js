@@ -22,7 +22,7 @@ const { Search } = Input;
 export default function Products() {
   const [checked, setChecked] = useState(true);
   const handleOpenPage = () => {
-    redirect("/master/product-add");
+    redirect("/master/product/add");
   };
 
   const columns = [

@@ -18,7 +18,7 @@ const { Search } = Input;
 
 export default function Customer() {
   const handleOpenPage = () => {
-    redirect("/master/customer-add");
+    redirect("/master/customer/add");
   };
 
   const columns = [

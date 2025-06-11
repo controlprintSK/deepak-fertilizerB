@@ -1195,7 +1195,9 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <Link href={`/plant-production`}>
-                        <Button className="viewAllLink" color="default" variant="filled">View All</Button>
+                        <Button type="primary"
+                          htmlType="submit"
+                          size="default">View All</Button>
                       </Link>
                     </div>
 
@@ -1218,7 +1220,9 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <Link href={`/company/scanned-quantity`}>
-                        <Button className="viewAllLink" color="default" variant="filled">View All</Button>
+                        <Button type="primary"
+                          htmlType="submit"
+                          size="default">View All</Button>
                       </Link>
                     </div>
 
