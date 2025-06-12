@@ -24,7 +24,9 @@ export default function Products() {
   const handleOpenPage = () => {
     redirect("/master/product/add");
   };
-
+  const handleEdit = (productCode) => {
+    redirect(`/master/product/edit/${productCode}`);
+  };
   const columns = [
     {
       title: "Product Image",
@@ -99,7 +101,7 @@ export default function Products() {
       status: <Tag color="success">Active</Tag>,
       action: (
         <Space>
-          <Button icon={<EditOutlined />} size="small" />
+          <Button onClick={()=>handleEdit("P0001")} icon={<EditOutlined />} size="small" />
         </Space>
       ),
     },

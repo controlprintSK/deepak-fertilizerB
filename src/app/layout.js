@@ -12,12 +12,10 @@ import persistStore from 'redux-persist/es/persistStore';
 import store from '@/store/index';
 import React from 'react';
 import { PersistGate } from 'redux-persist/integration/react';
-import { SessionProvider } from "next-auth/react"
 let persistor = persistStore(store);
 
 export default function RootLayout({ children }) {
   return (
-    <SessionProvider>
       <ConfigProvider
         theme={{
           token: {
@@ -38,7 +36,5 @@ export default function RootLayout({ children }) {
           </body>
         </html>
       </ConfigProvider>
-    </SessionProvider>
-
   );
 }

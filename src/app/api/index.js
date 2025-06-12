@@ -28,5 +28,8 @@ export const LIST_COMPANY = "company/listCompany";
 // General Setting
 
 // Line Master
-
+export const LIST_LINE = "line/listLine";
+export const ADD_LINE = "line/addLine";
+export const LINE_LISTBYID = "line/listLineById/%s";
+export const LINE_UPDATEBYID = "line/updateLine";
 // Product
