@@ -127,12 +127,12 @@ export default function MainLayout(props) {
                 ]);
                 setDefaultExpandedKey([`MODULE_${module?.ModuleId}`]);
                 if (!navBarInfo["ACTIVE_PAGE"]) {
-                  dispatch(
-                    selectNavReducer({
-                      value: `PAGE_${page?.PageId}`,
-                      activePage: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
-                    })
-                  );
+                  // dispatch(
+                  //   selectNavReducer({
+                  //     value: `PAGE_${page?.PageId}`,
+                  //     activePage: `MODULE_${module?.ModuleId}-PAGE_${page?.PageId}`,
+                  //   })
+                  // );
                 }
               }
             }
@@ -189,12 +189,12 @@ export default function MainLayout(props) {
     setDefaultSelectedKey([info?.node?.key]);
     let selectedMenu = String(info?.node?.key)?.split("-");
     if (selectedMenu?.length > 1) {
-      dispatch(
-        selectNavReducer({
-          value: selectedMenu[1],
-          activePage: info?.node?.key,
-        })
-      );
+      // dispatch(
+      //   selectNavReducer({
+      //     value: selectedMenu[1],
+      //     activePage: info?.node?.key,
+      //   })
+      // );
     }
   };
 

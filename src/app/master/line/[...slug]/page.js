@@ -69,7 +69,7 @@ export default function LineAdd() {
         Code: String(values.Code)?.toUpperCase(),
         Name: values.Name,
         Active: Number(values.Active),
-        CompanyCode: values?.CompanyCode
+        CompanyCode: String(user?.CurrentCompany)?.toUpperCase()
       }
       const res = editLineData
         ? await putAPI(`${LINE_UPDATEBYID}/${editLineData?.id}`,
@@ -128,7 +128,7 @@ export default function LineAdd() {
             layout="vertical"
             autoComplete="off"
             onFinish={handleLineSubmit}
-            initialValues={{ Active: true }}>
+            initialValues={{ Active: true, CompanyCode: `${user?.CurrentCompany}` }}>
             <div style={{ width: "736px" }}>
               <Row gutter={[32]}>
                 <Col span={12}>
@@ -169,7 +169,7 @@ export default function LineAdd() {
                         message: "Please select your Plant Name!",
                       },
                     ]}>
-                    <Input size="large" />
+                    <Input size="large" disabled={true} value={user?.CurrentCompany}/>
                   </Form.Item>
                 </Col>
               </Row>
@@ -189,7 +189,7 @@ export default function LineAdd() {
                       <Button type="primary" htmlType="submit" size="large">
                         Save
                       </Button>
-                      <Button htmlType="button" size="large">
+                      <Button htmlType="button" size="large" onClick={handleBackToList}>
                         Cancel
                       </Button>
                     </Space>
