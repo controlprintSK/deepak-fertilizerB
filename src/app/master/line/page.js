@@ -9,6 +9,8 @@ import { LIST_LINE } from "@/app/api";
 import { useSelector } from "react-redux";
 import { EditButton } from "@/app/components/common/Button";
 import { useRouter } from "next/navigation";
+import { displayMessage } from "@/utils/common";
+import { ERROR_MSG_TYPE } from "@/constants/hardData";
 const { Search } = Input;
 
 export default function Line() {
@@ -51,7 +53,7 @@ export default function Line() {
     {
       title: "Status",
       dataIndex: "Status",
-      key: "Status",
+      key: "Active",
     },
     {
       title: "Action",
@@ -88,15 +90,18 @@ export default function Line() {
       }
     } catch (error) {
       setLoading(false);
-      console.log(error);
+      displayMessage(
+        ERROR_MSG_TYPE,
+        'An error occurred while fetching the list of line.',
+      );
     }
   };
 
   useEffect(() => {
-    dataCompanyGroup(listLineDetails);
+    dataLineList(listLineDetails);
   }, [listLineDetails, searchQuery]);
 
-  const dataCompanyGroup = (items) => {
+  const dataLineList = (items) => {
     const filteredItems = searchFilter(items, searchQuery);
     const grouplist =
       filteredItems &&
