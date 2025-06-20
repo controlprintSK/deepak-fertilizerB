@@ -235,9 +235,9 @@ export default function ProductAdd() {
       formData.append('CompanyCode', user?.CurrentCompany);
       formData.append('Status', 1);
 
-      // if (fileList[0].originFileObj) {
-      //   formData.append('ProductImage', values?.ProductImage?.file?.originFileObj);
-      // }
+      if (fileList[0].originFileObj) {
+        formData.append('ProductImage', values?.ProductImage?.file?.originFileObj);
+      }
       // else if (existingImagePath) {
       //   formData.append('ProductImageEdit', values.ProductImage);
       // }
