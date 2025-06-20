@@ -13,7 +13,7 @@ import {
   Tag,
 } from "antd";
 import MainLayout from "@/app/components/MainLayout";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, SearchOutlined } from "@ant-design/icons";
 import { redirect, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { postAPI, putAPI } from "@/utils/apiRequest";
@@ -33,7 +33,7 @@ export default function Plant() {
 
   const handleEdit = (CompanyCode) => {
     // localStorage.setItem('companyData', CompanyCode);
-    router.push(`company/edit/${CompanyCode}`);
+    router.push(`plant/edit/${CompanyCode}`);
     // redirect(`/master/company-add`);
   };
 
@@ -50,10 +50,9 @@ export default function Plant() {
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
-      pageSize: 10,
+      pageSize: 5,
     },
   });
-  console.log(user, "useruseruseruseruseruseruser");
 
   const [filters, setFilters] = useState({
     CompanyCode: user?.CurrentCompany ? user?.CurrentCompany : "",
@@ -97,16 +96,20 @@ export default function Plant() {
     companyList?.forEach((val, i) => {
       data.push({
         key: i.toString(),
-        id: val?._id,
-        plantName: val?.dealerName,
-        plantCode: val?.dealerCode,
-        plantType: val?.priceListName,
-        licenseNo: val?.state,
-        address: val?.active,
-        state: val?.address1,
-        city: val?.address2,
+        id: val?.id,
+        plantName: val?.CompanyName,
+        plantCode: val?.CompanyCode,
+        plantType: val?.CompanyType,
+        licenseNo: val?.LicenseNo,
+        address: val?.Address,
+        state: val?.State,
+        city: val?.City,
         // status: val?.contactNo,
-        status: <Tag color="success">val?.active</Tag>,
+        status: (
+          <Tag color={val?.Active ? "green" : "red"}>
+            {val?.Active ? "Active" : "Inactive"}
+          </Tag>
+        ),
         contact: (
           <Button
             color="primary"
@@ -125,7 +128,7 @@ export default function Plant() {
               key={`edit_${i}`}
               shape="round"
               size="small"
-              onClick={() => handleEdit(company?.CompanyCode)}
+              onClick={() => handleEdit(val?.CompanyCode)}
             />
           </Space>
         ),
@@ -413,11 +416,11 @@ export default function Plant() {
                   Add Company
                 </Button> */}
                 <AddButton
-                  pageId={20}
+                  pageId={21}
                   rightId={2}
                   // _href={'/master/company/add'}
                   _function={handleOpenPage}
-                  text="Add Company"
+                  text="Add Plant"
                   _size="large"
                 />
               </div>

@@ -35,7 +35,7 @@ import {
   interpolate,
   searchPincode,
 } from "@/utils/common";
-import { deleteAPI, postAPI, putAPI } from "@/utils/apiRequest";
+import { deleteAPI, getAPI, postAPI, putAPI } from "@/utils/apiRequest";
 import { ERROR_MSG_TYPE, SUCCESS_MSG_TYPE } from "@/constants/hardData";
 import { DeleteButton, EditButton } from "@/app/components/common/Button";
 import { setCompanyList } from "@/redux/utilitiesSlice";
@@ -104,23 +104,22 @@ export default function PlantAdd() {
       if (res?.status == 200) {
         const companyData = res?.data[0];
         form.setFieldsValue({
-          CompanyCode: companyData?.CompanyCode,
-          CompanyName: companyData?.CompanyName,
-          CompanyGroup: companyData?.CompanyGroup,
+          PlantCode: companyData?.CompanyCode,
+          PlantName: companyData?.CompanyName,
           Address: companyData?.Address,
           City: companyData?.City,
           State: companyData?.State,
           Country: companyData?.Country,
           PinCode: companyData?.PinCode,
           LicenseNo: companyData?.LicenseNo,
-          CompanyType: companyData?.CompanyType,
+          PlantType: companyData?.CompanyType,
           IpAddress: companyData?.IpAddress,
           Active: companyData?.Active,
         });
         let _contactData = companyData.ContactDetails.map((item, index) => ({
           key: index.toString(),
-          _id: item._id,
-          CompanyCode: item.CompanyCode,
+          _id: item.id,
+          PlantCode: item.CompanyCode,
           Name: item.Name,
           ContactNo: item.ContactNo,
           Email: item.Email,
@@ -171,9 +170,7 @@ export default function PlantAdd() {
   const handleSave = async () => {
     formContact.validateFields().then(async (values) => {
       if (slug[0] == "edit") {
-        console.log(slug[0], "slug[0]slug[0]slug[0]");
         if (editcontact !== null) {
-          console.log(editcontact, "editcontacteditcontacteditcontact");
           // Edit contact via API
           try {
             const response = await putAPI(
@@ -263,7 +260,7 @@ export default function PlantAdd() {
 
   const handleEdit = (record) => {
     formContact.setFieldsValue(record);
-
+    console.log(record, "recordrecordrecord");
     if (slug[0] == "edit") {
       setEditContact(record._id);
     } else {
@@ -347,7 +344,7 @@ export default function PlantAdd() {
           <>
             <Space>
               <EditButton
-                pageId={20}
+                pageId={21}
                 rightId={3}
                 _function={() => {
                   handleEdit(record);
@@ -355,8 +352,8 @@ export default function PlantAdd() {
                 _size="small"
               />
               <DeleteButton
-                pageId={20}
-                rightId={3}
+                pageId={21}
+                rightId={4}
                 _function={() => {
                   handleDelete(record?._id, record.key);
                 }}
@@ -369,15 +366,25 @@ export default function PlantAdd() {
   ];
 
   const handleSubmit = async (values) => {
+    console.log(values, "valuesvaluesvaluesvalues");
     setLoading(true);
     if (dataSource.length == 0) {
       displayMessage(ERROR_MSG_TYPE, "Please add at least one contact.");
       return;
     }
     const formattedData = {
-      ...values,
+      CompanyCode: values?.PlantCode,
+      CompanyName: values?.PlantName,
+      Address: values?.Address,
+      City: values?.City,
+      State: values?.State,
+      Country: values?.Country,
+      PinCode: values?.PinCode,
+      LicenseNo: values?.LicenseNo,
+      CompanyType: values?.PlantType,
+      Active: values?.Active,
       ContactDetails: dataSource.map((item) => ({
-        CompanyCode: String(values?.CompanyCode)?.toUpperCase(),
+        CompanyCode: String(values?.PlantCode)?.toUpperCase(),
         Name: item.Name,
         ContactNo: item.ContactNo,
         Email: item.Email,
@@ -390,7 +397,18 @@ export default function PlantAdd() {
     let res;
     try {
       if (slug && slug.length > 0 && slug[0] == "edit") {
-        const formObj = values;
+        const formObj = {
+          CompanyCode: values?.PlantCode,
+          CompanyName: values?.PlantName,
+          Address: values?.Address,
+          City: values?.City,
+          State: values?.State,
+          Country: values?.Country,
+          PinCode: values?.PinCode,
+          LicenseNo: values?.LicenseNo,
+          CompanyType: values?.PlantType,
+          Active: values?.Active,
+        };
         res = await putAPI(UPDATE_COMPANY, formObj);
       } else {
         res = await postAPI(ADD_COMPANY, formattedData);
@@ -603,8 +621,11 @@ export default function PlantAdd() {
                     rules={[
                       {
                         required: true,
-                        pattern: REGEX_COUNTRY,
                         message: "Please input your Country!",
+                      },
+                      {
+                        pattern: REGEX_COUNTRY,
+                        message: "Please input your Country correct Format!",
                       },
                       {
                         max: 100,
@@ -623,6 +644,7 @@ export default function PlantAdd() {
                       {
                         required: true,
                         pattern: REGEX_STATE,
+                        message: "Please select State",
                       },
                       {
                         max: 100,
@@ -640,9 +662,12 @@ export default function PlantAdd() {
                     rules={[
                       {
                         required: true,
-                        pattern: REGEX_CITY,
                         message: "Please input your City!",
                       },
+                      // {
+                      //   pattern: REGEX_CITY,
+                      //   message: "Please input your City!",
+                      // },
                       {
                         max: 100,
                         message: "Only 100 characters are allowed!",
