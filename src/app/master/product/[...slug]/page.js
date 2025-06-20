@@ -120,22 +120,30 @@ export default function ProductAdd() {
         Active: Active,
       });
 
-      (async () => {
-        const url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_IMG_URL}${ProductImage}`;
-        try {
-          const base64 = await convertImageUrlToBase64(url);
-          setFileList([
-            {
-              uid: '-1',
-              name: ProductName,
-              status: 'done',
-              url: base64, // this is how Upload shows image from backend
-            },
-          ]);
-        } catch (e) {
-          console.error('Failed to convert image:', e);
-        }
-      })();
+      // (async () => {
+      //   const url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_IMG_URL}${ProductImage}`;
+      //   try {
+      //     const base64 = await convertImageUrlToBase64(url);
+      //     setFileList([
+      //       {
+      //         uid: '-1',
+      //         name: ProductName,
+      //         status: 'done',
+      //         url: base64, // this is how Upload shows image from backend
+      //       },
+      //     ]);
+      //   } catch (e) {
+      //     console.error('Failed to convert image:', e);
+      //   }
+      // })();
+      setFileList([
+        {
+          uid: '-1',
+          name: ProductName,
+          status: 'done',
+          url: ProductImage, // this is how Upload shows image from backend
+        },
+      ]);
     }
   }, [editProductData]);
   // ----- upload images -----
@@ -154,7 +162,7 @@ export default function ProductAdd() {
     setPreviewOpen(true);
   };
 
-  const handleChange = ({ fileList: newFileList }) => { setFileList(newFileList)};
+  const handleChange = ({ fileList: newFileList }) => { setFileList(newFileList) };
 
   const uploadButton = (
     <button
@@ -227,9 +235,9 @@ export default function ProductAdd() {
       formData.append('CompanyCode', user?.CurrentCompany);
       formData.append('Status', 1);
 
-      if (fileList[0].originFileObj) {
-        formData.append('ProductImage', values?.ProductImage?.file?.originFileObj);
-      }
+      // if (fileList[0].originFileObj) {
+      //   formData.append('ProductImage', values?.ProductImage?.file?.originFileObj);
+      // }
       // else if (existingImagePath) {
       //   formData.append('ProductImageEdit', values.ProductImage);
       // }
@@ -382,7 +390,7 @@ export default function ProductAdd() {
                       {
                         validator: (_, value) => {
                           if (value === undefined || value === null || value === '') {
-                            return Promise.resolve(); 
+                            return Promise.resolve();
                           }
 
                           const numValue = Number(value);

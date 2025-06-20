@@ -24,7 +24,7 @@ import { PRODUCT_LIST } from "@/app/api";
 import { postAPI } from "@/utils/apiRequest";
 import { ERROR_MSG_TYPE } from "@/constants/hardData";
 import { displayMessage } from "@/utils/common";
-import { EditButton } from "@/app/components/common/Button";
+import { DeleteButton, EditButton } from "@/app/components/common/Button";
 const { Search } = Input;
 
 export default function Products() {
@@ -77,18 +77,18 @@ export default function Products() {
       );
     }
   };
-  console.log("tableParams",tableParams)
+
   useEffect(() => {
     dataProductsList(productList);
   }, [productList, searchQuery]);
-  const imageURL =  process.env.NEXT_PUBLIC_BACKEND_BASE_IMG_URL
+  const imageURL = process.env.NEXT_PUBLIC_BACKEND_BASE_IMG_URL
   const dataProductsList = (items) => {
     const filteredItems = searchFilter(items, searchQuery);
     const grouplist =
       filteredItems &&
       filteredItems.map((val, i) => ({
         key: i,
-        ProductImage: <Image src={`${imageURL}${val?.ProductImage}`} crossOrigin="anonymous" alt={val?.ProductName}/>,
+        ProductImage: <Image src={`${imageURL}${val?.ProductImage}`} crossOrigin="anonymous" alt={val?.ProductName} />,
         ProductName: val?.ProductName,
         ProductCode: val?.ProductCode,
         ProductType: val?.ProductType,
@@ -125,6 +125,10 @@ export default function Products() {
               _function={() => handleEdit(val?.ProductCode)}
               _size="small"
             />
+            {/* <DeleteButton pageId={23}
+              rightId={3}
+              _function={() => deletebycode(val?.ProductCode)}
+              _size="small" /> */}
           </Space>
         ),
       }));
@@ -148,6 +152,22 @@ export default function Products() {
   const handleEdit = (ProductCode) => {
     router.push(`/master/product/edit/${ProductCode}`);
   };
+  // const deletebycode = async (ProductCode) => {
+  //   setLoading(true);
+  //   try {
+  //     const res = await deleteAPI(interpolate(PRODUCT_LISTBYID, [ProductCode]));
+  //     setLoading(false);
+  //     if (res?.status === 200) {
+  //       displayMessage(SUCCESS_MSG_TYPE, 'Product deleted successfully');
+  //       listproduct();
+  //     } else {
+  //       displayMessage(ERROR_MSG_TYPE, res?.message);
+  //     }
+  //   } catch (error) {
+  //     setLoading(false);
+  //     displayMessage(ERROR_MSG_TYPE, error?.message);
+  //   }
+  // };
   const columns = [
     {
       title: "Product Image",
