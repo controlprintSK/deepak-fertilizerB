@@ -44,3 +44,9 @@ export const LIST_LINE_MASTER = "lineManager/listLineManager";
 // Line Master
 
 // Product
+// Customer
+export const LIST_CUSTOMER = "customerMaster/listCustomer";
+export const ADD_CUSTOMER = "customerMaster/addCustomer";
+export const UPDATE_CUSTOMER = "customerMaster/updateCustomer/%s";
+export const ALL_CUSTOMER_LIST = "customerMaster/listAllCustomer";
+export const GET_CUSTOMER_BYCODE = "customerMaster/listCustomerById/%s";

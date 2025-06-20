@@ -53,7 +53,6 @@ export default function Plant() {
       pageSize: 5,
     },
   });
-  console.log(user, "useruseruseruseruseruseruser");
 
   const [filters, setFilters] = useState({
     CompanyCode: user?.CurrentCompany ? user?.CurrentCompany : "",
@@ -421,7 +420,7 @@ export default function Plant() {
                   rightId={2}
                   // _href={'/master/company/add'}
                   _function={handleOpenPage}
-                  text="Add Company"
+                  text="Add Plant"
                   _size="large"
                 />
               </div>

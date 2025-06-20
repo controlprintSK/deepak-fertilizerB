@@ -170,9 +170,7 @@ export default function PlantAdd() {
   const handleSave = async () => {
     formContact.validateFields().then(async (values) => {
       if (slug[0] == "edit") {
-        console.log(slug[0], "slug[0]slug[0]slug[0]");
         if (editcontact !== null) {
-          console.log(editcontact, "editcontacteditcontacteditcontact");
           // Edit contact via API
           try {
             const response = await putAPI(
@@ -262,7 +260,7 @@ export default function PlantAdd() {
 
   const handleEdit = (record) => {
     formContact.setFieldsValue(record);
-
+    console.log(record, "recordrecordrecord");
     if (slug[0] == "edit") {
       setEditContact(record._id);
     } else {
@@ -368,15 +366,25 @@ export default function PlantAdd() {
   ];
 
   const handleSubmit = async (values) => {
+    console.log(values, "valuesvaluesvaluesvalues");
     setLoading(true);
     if (dataSource.length == 0) {
       displayMessage(ERROR_MSG_TYPE, "Please add at least one contact.");
       return;
     }
     const formattedData = {
-      ...values,
+      CompanyCode: values?.PlantCode,
+      CompanyName: values?.PlantName,
+      Address: values?.Address,
+      City: values?.City,
+      State: values?.State,
+      Country: values?.Country,
+      PinCode: values?.PinCode,
+      LicenseNo: values?.LicenseNo,
+      CompanyType: values?.PlantType,
+      Active: values?.Active,
       ContactDetails: dataSource.map((item) => ({
-        CompanyCode: String(values?.CompanyCode)?.toUpperCase(),
+        CompanyCode: String(values?.PlantCode)?.toUpperCase(),
         Name: item.Name,
         ContactNo: item.ContactNo,
         Email: item.Email,
@@ -613,8 +621,11 @@ export default function PlantAdd() {
                     rules={[
                       {
                         required: true,
-                        pattern: REGEX_COUNTRY,
                         message: "Please input your Country!",
+                      },
+                      {
+                        pattern: REGEX_COUNTRY,
+                        message: "Please input your Country correct Format!",
                       },
                       {
                         max: 100,
@@ -633,6 +644,7 @@ export default function PlantAdd() {
                       {
                         required: true,
                         pattern: REGEX_STATE,
+                        message: "Please select State",
                       },
                       {
                         max: 100,
@@ -650,9 +662,12 @@ export default function PlantAdd() {
                     rules={[
                       {
                         required: true,
-                        pattern: REGEX_CITY,
                         message: "Please input your City!",
                       },
+                      // {
+                      //   pattern: REGEX_CITY,
+                      //   message: "Please input your City!",
+                      // },
                       {
                         max: 100,
                         message: "Only 100 characters are allowed!",
