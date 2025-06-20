@@ -169,7 +169,7 @@ export default function Production() {
                             </span>
                         </Link>
                         <Link
-                            href={`/plant-production/plant-product`}>
+                            href={`/plant-production/product-wise`}>
                             <span>
                                 <Button
                                     shape="circle"
@@ -371,7 +371,6 @@ export default function Production() {
 
     return (
         <MainLayout>
-
             <div className="page_title_container">
                 <div className="component__name">
                     <Breadcrumb separator="" items={breadcrumbItems} />

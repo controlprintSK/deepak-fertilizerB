@@ -17,7 +17,7 @@ import { EditOutlined, SearchOutlined } from "@ant-design/icons";
 import { redirect, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { postAPI, putAPI } from "@/utils/apiRequest";
-import { LIST_COMPANY, LIST_COMPANY_CONTACT, STATUS_UPDATE } from "@/app/api";
+import { LIST_COMPANY } from "@/app/api";
 import { ERROR_MSG_TYPE, SUCCESS_MSG_TYPE } from "@/constants/hardData";
 import { displayMessage, interpolate } from "@/utils/common";
 import { AddButton } from "@/app/components/common/Button";

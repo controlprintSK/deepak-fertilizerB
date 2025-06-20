@@ -33,7 +33,7 @@ import { useRouter } from "next/navigation";
 import MainLayout from "@/app/components/MainLayout";
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-export default function PlantProduct() {
+export default function Product() {
     //   let slug = getUserSlug();
     let slug = '';
     const router = useRouter();
@@ -157,9 +157,9 @@ export default function PlantProduct() {
 
     const columnsProductReport = [
         {
-            title: "Product",
-            dataIndex: "product",
-            key: "product",
+            title: "Batch No.",
+            dataIndex: "batchNo",
+            key: "batchNo",
         },
         {
             title: "Quantity",
@@ -167,54 +167,43 @@ export default function PlantProduct() {
             key: "quantity",
         },
         {
-            title: "Action",
-            dataIndex: "action",
-            key: "action",
-            width: 150,
+            title: "MFG Date",
+            dataIndex: "batchMfgDate",
+            key: "batchMfgDate",
         },
     ];
 
     const dataPlantProduct = [
         {
-            key: "1",
-            product: "CROPTEK 9:24:24",
-            quantity: "2,40,356",
-            action: (
-                <>
-                    <Space size="large">
-                        <Link
-                            href={`scanned-quantity/scanned-quantity-state`}>
-                            <span> <Button
-                                type="default"
-                                color="primary"
-                                variant="text"
-                                size="small"
-                            >Download
-                            </Button>
-                            </span>
-                        </Link>
-                        <Link
-                            href={`/plant-production/product`}>
-                            <span>
-                                <Button
-                                    shape="circle"
-                                    icon={<ArrowRightOutlined />}
-                                    type="default"
-                                    color="primary" variant="outlined" size="small"
-                                />
-                            </span>
-                        </Link>
-                    </Space>
-                </>
-
-            ),
+            "key": "1",
+            "batchNo": "B1004",
+            "quantity": "2,40,356",
+            "batchMfgDate": "25 March 2025"
+        },
+        {
+            "key": "2",
+            "batchNo": "B1004",
+            "quantity": "2,40,356",
+            "batchMfgDate": "25 March 2025"
+        },
+        {
+            "key": "3",
+            "batchNo": "B1004",
+            "quantity": "2,40,356",
+            "batchMfgDate": "25 March 2025"
+        },
+        {
+            "key": "4",
+            "batchNo": "B1004",
+            "quantity": "2,40,356",
+            "batchMfgDate": "25 March 2025"
         }
     ]
     const plantProductInfo =
     {
-        plantCode: "P001",
-        plantName: "Taloja (Maharashtra)",
-        quantity: "2,40,356"
+        productName: "CROPTEK 9:24:24",
+        quantity: "2,40,356",
+        plantName: "Taloja (Maharashtra)"
     }
 
     // useEffect(() => {
@@ -248,22 +237,28 @@ export default function PlantProduct() {
     //     setLoading(false);
     // }, [productList, selectedProduct]);
 
-    const breadcrumbItems = [
-        {
-            title: (
-                <Space>
-                    <LeftOutlined onClick={() => router.back()} />
-                    Plant Production
-                </Space>
-            ),
-        },
-    ];
 
     return (
         <MainLayout>
             <div className="page_title_container">
                 <div className="component__name">
-                    <Breadcrumb separator="" items={breadcrumbItems} />
+                    <Breadcrumb
+                        items={[
+                            {
+                                title: (
+                                    <Space>
+                                        <LeftOutlined onClick={() => router.back()} />
+                                        Plant Production
+                                    </Space>
+                                ),
+
+                            },
+                            {
+                                title: "Batch Wise",
+                            }
+
+                        ]}
+                    />
                 </div>
             </div>
             <div className="qc_page_container">
@@ -311,7 +306,7 @@ export default function PlantProduct() {
                                     <div className="mb-3">
                                         <div>Plant Code</div>
                                         <h3 className="value">
-                                            {plantProductInfo?.plantCode || "N/A"}
+                                            {plantProductInfo?.productName || "N/A"}
                                         </h3>
                                     </div>
                                     <div className="mb-3">

@@ -21,14 +21,14 @@ import { redirect } from "next/navigation";
 import { PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
-export default function ProductAdd() {
+export default function CustomerAdd() {
   const [form] = Form.useForm();
 
   const handleBackToList = () => {
-    redirect("/master/products");
+    redirect("/master/customer");
   };
 
-  const handleProductSubmit = async (values) => {
+  const handleCustomerSubmit = async (values) => {
     console.log("---->>--", values);
   };
 
@@ -86,12 +86,12 @@ export default function ProductAdd() {
               {
                 title: (
                   <div className="cursor_pointer" onClick={handleBackToList}>
-                    Product
+                    Customer
                   </div>
                 ),
               },
               {
-                title: "Add Product",
+                title: "Add Customer",
               },
             ]}
           />
@@ -103,28 +103,18 @@ export default function ProductAdd() {
           form={form}
           layout="vertical"
           autoComplete="off"
-          onFinish={handleProductSubmit}>
+          onFinish={handleCustomerSubmit}>
           <div style={{ width: "736px" }}>
             <Row gutter={[32]}>
               <Col span={12}>
                 <Form.Item
-                  label="Product Name"
-                  name="ProductName"
+                  label="Customer Code"
+                  name="CustomerCode"
                   rules={[
-                    { required: true, message: "Product Name is required" },
-                  ]}>
-                  <Input type="text" size="large" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="Product Code"
-                  name="ProductCode"
-                  rules={[
-                    { required: true, message: "Product Code is required" },
+                    { required: true, message: "Customer Code is required" },
                     {
                       max: 100,
-                      message: "Product Code cannot exceed 100 characters",
+                      message: "Customer Code cannot exceed 100 characters",
                     },
                   ]}>
                   <Input type="text" size="large" />
@@ -132,29 +122,53 @@ export default function ProductAdd() {
               </Col>
               <Col span={12}>
                 <Form.Item
-                  label="Product Type"
-                  name="productType"
+                  label="Customer Name"
+                  name="CustomerName"
+                  rules={[
+                    { required: true, message: "Customer Name is required" },
+                  ]}>
+                  <Input type="text" size="large" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Contact No."
+                  name="ContactNo"
+                  rules={[
+                    { required: true, message: "Contact No. is required" },
+                  ]}>
+                  <Input type="text" size="large" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Customer Type"
+                  name="CustomerType"
                   rules={[
                     {
                       required: true,
-                      message: "Please select product type!",
+                      message: "Select Customer Type!",
                     },
                   ]}>
                   <Select
                     size="large"
-                    placeholder="Please product type"
+                    placeholder="Select Customer Type"
                     options={[
                       {
-                        value: "MAL",
-                        label: "MAL",
+                        value: "Distributor",
+                        label: "Distributor",
                       },
                       {
-                        value: "IC",
-                        label: "IC",
+                        value: "Stockiest",
+                        label: "Stockiest",
                       },
                       {
-                        value: "Explosives",
-                        label: "Explosives",
+                        value: "Dealer",
+                        label: "Dealer",
+                      },
+                      {
+                        value: "Customer",
+                        label: "Customer",
                       },
                     ]}
                   />
@@ -162,79 +176,14 @@ export default function ProductAdd() {
               </Col>
               <Col span={12}>
                 <Form.Item
-                  label="Weight"
-                  name="Weight"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select Weight!",
-                    },
-                  ]}>
-                  <Select
-                    size="large"
-                    placeholder="Please select Weight"
-                    options={[
-                      {
-                        value: "Weight 1",
-                        label: "Weight 1",
-                      },
-                      {
-                        value: "Weight 2",
-                        label: "Weight 2",
-                      },
-                      {
-                        value: "Weight 3",
-                        label: "Weight 3",
-                      },
-                    ]}
-                  />
+                  label="GSTIN."
+                  name="GSTIN"
+                  rules={[{ required: true, message: "GSTIN. is required" }]}>
+                  <Input type="text" size="large" />
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item
-                  label="M.R.P."
-                  name="mrp"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select your M.R.P.!",
-                    },
-                  ]}>
-                  <Input size="large" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="UOM"
-                  name="UOM"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select UOM!",
-                    },
-                  ]}>
-                  <Select
-                    size="large"
-                    placeholder="Please select UOM"
-                    options={[
-                      {
-                        value: "UOM 1",
-                        label: "UOM 1",
-                      },
-                      {
-                        value: "UOM 2",
-                        label: "UOM 2",
-                      },
-                      {
-                        value: "UOM 3",
-                        label: "UOM 3",
-                      },
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="Add Product Image" name="ProductImage">
+                <Form.Item label="Customer Logo" name="CustomerLogo">
                   <>
                     <Upload
                       action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
@@ -256,12 +205,80 @@ export default function ProductAdd() {
                         !visible && setPreviewImage(""),
                     }}
                     src={previewImage}
-                    alt="product img"
+                    alt="Customer Image"
                   />
                 )}
               </Col>
+            </Row>
+            <h3 className="qc_mb_5">Customer Address</h3>
+            <Row gutter={[32]}>
+              <Col span={24}>
+                <Form.Item
+                  label="Address"
+                  name="Address"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select your Address!",
+                    },
+                  ]}>
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
               <Col span={12}>
-                <Form.Item label="Active">
+                <Form.Item
+                  label="Pin Code"
+                  name="Pin Code"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select your Pin Code!",
+                    },
+                  ]}>
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Country"
+                  name="Country"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select your Country!",
+                    },
+                  ]}>
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="State"
+                  name="State"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select your State!",
+                    },
+                  ]}>
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="City"
+                  name="City"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select your City!",
+                    },
+                  ]}>
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Status">
                   <Switch checkedChildren="On" unCheckedChildren="Off" />
                 </Form.Item>
               </Col>
