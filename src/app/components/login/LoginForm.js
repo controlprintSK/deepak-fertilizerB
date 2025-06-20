@@ -55,12 +55,12 @@ export default function LoginForm({ setForgotPasswordForm }) {
         userType == "1"
           ? {
               CompanyCode: String(values?.PlantCode).toUpperCase(),
-              UserName: String(values?.userName).toLowerCase(),
-              Password: values?.password,
+              UserName: String(values?.UserName).toLowerCase(),
+              Password: values?.Password,
             }
           : {
-              UserName: String(values?.userName).toLowerCase(),
-              Password: values?.password,
+              UserName: String(values?.UserName).toLowerCase(),
+              Password: values?.Password,
             };
 
       let res = await postAPI(LOGIN, finalUserData, {
