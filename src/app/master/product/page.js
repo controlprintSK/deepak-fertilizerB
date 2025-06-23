@@ -42,9 +42,14 @@ export default function Products() {
     },
   });
 
+  const [filters, setFilters] = useState({
+    page: tableParams?.pagination?.current,
+    limit: tableParams?.pagination?.pageSize,
+  });
+
   useEffect(() => {
     listproduct();
-  }, [JSON.stringify(tableParams)]);
+  }, [JSON.stringify(filters)]);
 
   const listproduct = async () => {
     setLoading(true);
@@ -222,6 +227,17 @@ export default function Products() {
     },
   ];
 
+const handleTableChange = (pagination) => {
+    setTableParams({
+      pagination,
+    });
+ 
+    setFilters((prev) => ({
+      ...prev,
+      page: pagination.current,
+      limit: pagination.pageSize,
+    }));
+  };
 
   return (
     <MainLayout>
@@ -295,6 +311,8 @@ export default function Products() {
               dataSource={tableData}
               columns={columns}
               size="small"
+              pagination={tableParams.pagination}
+              onChange={handleTableChange}
             />
           </div>
         </div>

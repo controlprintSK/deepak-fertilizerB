@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Breadcrumb, Button, Col, Input, Row, Space, Spin, Table, Tag } from "antd";
+import { Breadcrumb, Button, Col, Input, Pagination, Row, Space, Spin, Table, Tag } from "antd";
 import MainLayout from "@/app/components/MainLayout";
 import { EditOutlined } from "@ant-design/icons";
 import { redirect } from "next/navigation";
@@ -24,6 +24,10 @@ export default function Line() {
       current: 1,
       pageSize: 10,
     },
+  });
+  const [filters, setFilters] = useState({
+    page: tableParams?.pagination?.current,
+    limit: tableParams?.pagination?.pageSize,
   });
   const router = useRouter()
   const handleOpenPage = () => {
@@ -64,7 +68,7 @@ export default function Line() {
 
   useEffect(() => {
     listLine()
-  }, [JSON.stringify(tableParams)])
+  }, [JSON.stringify(filters)])
 
   const listLine = async () => {
     setLoading(true);
@@ -96,7 +100,7 @@ export default function Line() {
       );
     }
   };
-
+  console.log("pagination", tableParams)
   useEffect(() => {
     dataLineList(listLineDetails);
   }, [listLineDetails, searchQuery]);
@@ -152,7 +156,17 @@ export default function Line() {
         item?.CompanyCode?.toLowerCase().includes(query.toLowerCase())
     );
   };
-
+  const handleTableChange = (pagination) => {
+    setTableParams({
+      pagination,
+    });
+ 
+    setFilters((prev) => ({
+      ...prev,
+      page: pagination.current,
+      limit: pagination.pageSize,
+    }));
+  };
 
   return (
     <MainLayout>
@@ -209,16 +223,13 @@ export default function Line() {
               dataSource={tableData}
               columns={columns}
               size="small"
-              pagination={{
-                defaultPageSize: 10,
-                // pageSizeOptions: ["10", "20", "30"],
-                // showSizeChanger: true,
-              }}
-
+              pagination={tableParams.pagination}
+              onChange={handleTableChange}
             />
           </div>
         </div>
       </Spin>
+
     </MainLayout>
   );
 }
