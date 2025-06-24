@@ -11,6 +11,7 @@ import { EditButton } from "@/app/components/common/Button";
 import { useRouter } from "next/navigation";
 import { displayMessage } from "@/utils/common";
 import { ERROR_MSG_TYPE } from "@/constants/hardData";
+import { useDebounceCallback } from "@/app/components/common/useDebounceCallback";
 const { Search } = Input;
 
 export default function Line() {
@@ -26,10 +27,39 @@ export default function Line() {
     },
   });
   const [filters, setFilters] = useState({
+    Code: "",
+    Name: "",
+    CompanyCode:"",
     page: tableParams?.pagination?.current,
     limit: tableParams?.pagination?.pageSize,
   });
-  const router = useRouter()
+  const router = useRouter();
+
+  const handleLineCodeChange = useDebounceCallback((value) => {
+    if (value && value.length > 3) {
+      setFilters((prev) => ({ ...prev, Code: value?.trim() }));
+    } else {
+      setFilters((prev) => ({ ...prev, Code: "" }));
+    }
+  }, 1000);
+
+  const handleLineNameChange = useDebounceCallback((value) => {
+    if (value && value.length > 3) {
+      setFilters((prev) => ({ ...prev, Name: value?.trim() }));
+    } else {
+      setFilters((prev) => ({ ...prev, Name: "" }));
+    }
+  }, 1000);
+
+  const handlePlantNameChange = useDebounceCallback((value) => {
+    if (value && value.length > 3) {
+      setFilters((prev) => ({ ...prev, Name: value?.trim() }));
+    } else {
+      setFilters((prev) => ({ ...prev, Name: "" }));
+    }
+  }, 1000);
+
+
   const handleOpenPage = () => {
     router.push("/master/line/add");
   };
@@ -78,6 +108,8 @@ export default function Line() {
         page: tableParams?.pagination?.current,
         limit: tableParams?.pagination?.pageSize,
         CompanyCode: user?.CurrentCompany || '',
+        Code: filters?.Code || '',
+        Name: filters?.Name || '',
       };
 
       const res = await postAPI(LIST_LINE, reqData);
@@ -102,14 +134,9 @@ export default function Line() {
   };
   console.log("pagination", tableParams)
   useEffect(() => {
-    dataLineList(listLineDetails);
-  }, [listLineDetails, searchQuery]);
-
-  const dataLineList = (items) => {
-    const filteredItems = searchFilter(items, searchQuery);
-    const grouplist =
-      filteredItems &&
-      filteredItems.map((val, i) => ({
+    const data = [];
+    listLineDetails.map((val, i) => {
+      data.push({
         key: i,
         Code: val?.Code,
         Name: val?.Name,
@@ -141,26 +168,16 @@ export default function Line() {
             />
           </Space>
         ),
-      }));
-    setTableData(grouplist);
-  };
+      })
+    });
+    setTableData(data);
+  }, [listLineDetails]);
 
-  const searchFilter = (items, query) => {
-    if (!query && query.length < 3) {
-      return items;
-    }
-    return items.filter(
-      (item) =>
-        item?.Code?.toLowerCase().includes(query.toLowerCase()) ||
-        item?.Name?.toLowerCase().includes(query.toLowerCase()) ||
-        item?.CompanyCode?.toLowerCase().includes(query.toLowerCase())
-    );
-  };
   const handleTableChange = (pagination) => {
     setTableParams({
       pagination,
     });
- 
+
     setFilters((prev) => ({
       ...prev,
       page: pagination.current,
@@ -193,17 +210,17 @@ export default function Line() {
                 <Row gutter={[10, 10]}>
                   <Col>
                     <div className="filter__item__search">
-                      <Search placeholder="Search Line Code" size="large" onChange={(e) => setSearchQuery(e.target.value)} />
+                      <Search placeholder="Search Line Code" size="large" onChange={(e) => handleLineCodeChange(e.target.value)} />
                     </div>
                   </Col>
                   <Col>
                     <div className="filter__item__search">
-                      <Search placeholder="Search Line Name" size="large" onChange={(e) => setSearchQuery(e.target.value)} />
+                      <Search placeholder="Search Line Name" size="large" onChange={(e) => handleLineNameChange(e.target.value)} />
                     </div>
                   </Col>
                   <Col>
                     <div className="filter__item__search">
-                      <Search placeholder="Search Plant Name" size="large" onChange={(e) => setSearchQuery(e.target.value)} />
+                      <Search placeholder="Search Plant Name" size="large" onChange={(e) => handlePlantNameChange(e.target.value)} />
                     </div>
                   </Col>
                 </Row>

@@ -25,6 +25,7 @@ import { getAPI, postAPI } from "@/utils/apiRequest";
 import { ERROR_MSG_TYPE } from "@/constants/hardData";
 import { displayMessage, interpolate } from "@/utils/common";
 import { DeleteButton, EditButton } from "@/app/components/common/Button";
+import { useDebounceCallback } from "@/app/components/common/useDebounceCallback";
 const { Search } = Input;
 
 export default function Products() {
@@ -53,6 +54,25 @@ export default function Products() {
     listproduct();
     fetchProductType();
   }, [JSON.stringify(filters)]);
+  //search products
+  const handleProductCodeChange = useDebounceCallback((value) => {
+    if (value && value.length > 3) {
+      setFilters((prev) => ({ ...prev, ProductCode: value?.trim() }));
+    } else {
+      setFilters((prev) => ({ ...prev, ProductCode: "" }));
+    }
+  }, 1000);
+
+  const handleProductNameChange = useDebounceCallback((value) => {
+    if (value && value.length > 3) {
+      setFilters((prev) => ({ ...prev, ProductName: value?.trim() }));
+    } else {
+      setFilters((prev) => ({ ...prev, ProductName: "" }));
+    }
+  }, 1000);
+  const handleProductTypeChange = useDebounceCallback((value) => {
+    setFilters((pre) => ({ ...pre, ProductType: value || "" }));
+  }, 1000);
 
   const listproduct = async () => {
     setLoading(true);
@@ -62,6 +82,9 @@ export default function Products() {
         page: tableParams?.pagination?.current,
         limit: tableParams?.pagination?.pageSize,
         CompanyCode: user?.CurrentCompany || '',
+        ProductCode: filters?.ProductCode || '',
+        ProductName: filters?.ProductName || '',
+        ProductType: filters?.ProductType || '',
       };
 
       const res = await postAPI(PRODUCT_LIST, reqData);
@@ -105,14 +128,10 @@ export default function Products() {
     setProductTypeOption(data);
   }, [productTypeList]);
   useEffect(() => {
-    dataProductsList(productList);
-  }, [productList, searchQuery]);
-  const imageURL = process.env.NEXT_PUBLIC_BACKEND_BASE_IMG_URL
-  const dataProductsList = (items) => {
-    const filteredItems = searchFilter(items, searchQuery);
-    const grouplist =
-      filteredItems &&
-      filteredItems.map((val, i) => ({
+    const data = [];
+    const imageURL = process.env.NEXT_PUBLIC_BACKEND_BASE_IMG_URL
+    productList?.map((val, i) => {
+      data.push({
         key: i,
         ProductImage: <Image src={`${imageURL}${val?.ProductImage}`} crossOrigin="anonymous" alt={val?.ProductName} />,
         ProductName: val?.ProductName,
@@ -157,42 +176,11 @@ export default function Products() {
               _size="small" /> */}
           </Space>
         ),
-      }));
-    setTableData(grouplist);
-  };
+      })
 
-  // const searchFilter = (items, query) => {
-  //   if (!query || query.length < 3) {
-  //     return items;
-  //   }
-  //   return items.filter(
-  //     (item) =>
-  //       item?.ProductCode?.toLowerCase().includes(query.toLowerCase()) ||
-  //       item?.ProductName?.toLowerCase().includes(query.toLowerCase()) ||
-  //       item?.ProductType?.toLowerCase().includes(query.toLowerCase())
-  //   );
-  // };
-
-  const searchFilter = (items, query) => {
-    if (!query) return items;
-
-    const lowerQuery = query.toLowerCase();
-
-    return items.filter((item) => {
-      const codeMatch =
-        lowerQuery.length >= 3 &&
-        item?.ProductCode?.toLowerCase().includes(lowerQuery);
-
-      const typeMatch =
-        item?.ProductType?.toLowerCase().includes(lowerQuery);
-
-      const nameMatch =
-        item?.ProductName?.toLowerCase().includes(lowerQuery); // always allowed
-
-      return codeMatch || typeMatch || nameMatch;
     });
-  };
-  console.log("search", searchQuery)
+    setTableData(data)
+  }, [productList]);
 
   const handleOpenPage = () => {
     router.push("/master/product/add");
@@ -286,7 +274,6 @@ export default function Products() {
     <MainLayout>
       <Spin spinning={loading}>
         <div className="page_title_container">
-          {/* <div className="component__name">Master</div> */}
           <div>
             <Breadcrumb
               items={[
@@ -307,12 +294,12 @@ export default function Products() {
                 <Row gutter={[10, 10]}>
                   <Col>
                     <div className="filter__item__search">
-                      <Search placeholder="Search Product Name" size="large" onChange={(e) => setSearchQuery(e.target.value)} />
+                      <Search placeholder="Search Product Name" size="large" onChange={(e) => handleProductNameChange(e.target.value)} />
                     </div>
                   </Col>
                   <Col>
                     <div className="filter__item__search">
-                      <Search placeholder="Search Product Code" size="large" onChange={(e) => setSearchQuery(e.target.value)} />
+                      <Search placeholder="Search Product Code" size="large" onChange={(e) => handleProductCodeChange(e.target.value)} />
                     </div>
                   </Col>
                   <Col>
@@ -324,7 +311,7 @@ export default function Products() {
                         size="large"
                         placeholder="Select Product Type"
                         options={productTypeOption || []}
-                        onChange={setSearchQuery}
+                        onChange={handleProductTypeChange}
                       />
                     </div>
                   </Col>
