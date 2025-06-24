@@ -20,10 +20,10 @@ import { redirect } from "next/navigation";
 import { EditOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { PRODUCT_LIST } from "@/app/api";
-import { postAPI } from "@/utils/apiRequest";
+import { GET_COMMON, PRODUCT_LIST } from "@/app/api";
+import { getAPI, postAPI } from "@/utils/apiRequest";
 import { ERROR_MSG_TYPE } from "@/constants/hardData";
-import { displayMessage } from "@/utils/common";
+import { displayMessage, interpolate } from "@/utils/common";
 import { DeleteButton, EditButton } from "@/app/components/common/Button";
 const { Search } = Input;
 
@@ -34,6 +34,8 @@ export default function Products() {
   const [productList, setProductList] = useState([])
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [productTypeList, setProductTypeList] = useState([]);
+  const [productTypeOption, setProductTypeOption] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [tableParams, setTableParams] = useState({
     pagination: {
@@ -49,6 +51,7 @@ export default function Products() {
 
   useEffect(() => {
     listproduct();
+    fetchProductType();
   }, [JSON.stringify(filters)]);
 
   const listproduct = async () => {
@@ -83,6 +86,24 @@ export default function Products() {
     }
   };
 
+  const fetchProductType = async () => {
+    try {
+      let res = await getAPI(interpolate(GET_COMMON, ['PRODUCTTYPE']));
+      if (res?.status == 200) {
+        setProductTypeList(res?.data);
+      } else {
+        setProductTypeList([]);
+      }
+    } catch (error) { }
+  };
+
+  useEffect(() => {
+    const data = productTypeList.map((val) => ({
+      value: val?.Value,
+      label: val?.Value,
+    }));
+    setProductTypeOption(data);
+  }, [productTypeList]);
   useEffect(() => {
     dataProductsList(productList);
   }, [productList, searchQuery]);
@@ -140,17 +161,39 @@ export default function Products() {
     setTableData(grouplist);
   };
 
+  // const searchFilter = (items, query) => {
+  //   if (!query || query.length < 3) {
+  //     return items;
+  //   }
+  //   return items.filter(
+  //     (item) =>
+  //       item?.ProductCode?.toLowerCase().includes(query.toLowerCase()) ||
+  //       item?.ProductName?.toLowerCase().includes(query.toLowerCase()) ||
+  //       item?.ProductType?.toLowerCase().includes(query.toLowerCase())
+  //   );
+  // };
+
   const searchFilter = (items, query) => {
-    if (!query && query.length < 3) {
-      return items;
-    }
-    return items.filter(
-      (item) =>
-        item?.ProductCode?.toLowerCase().includes(query.toLowerCase()) ||
-        item?.ProductName?.toLowerCase().includes(query.toLowerCase()) ||
-        item?.ProductType?.toLowerCase().includes(query.toLowerCase())
-    );
+    if (!query) return items;
+
+    const lowerQuery = query.toLowerCase();
+
+    return items.filter((item) => {
+      const codeMatch =
+        lowerQuery.length >= 3 &&
+        item?.ProductCode?.toLowerCase().includes(lowerQuery);
+
+      const typeMatch =
+        item?.ProductType?.toLowerCase().includes(lowerQuery);
+
+      const nameMatch =
+        item?.ProductName?.toLowerCase().includes(lowerQuery); // always allowed
+
+      return codeMatch || typeMatch || nameMatch;
+    });
   };
+  console.log("search", searchQuery)
+
   const handleOpenPage = () => {
     router.push("/master/product/add");
   };
@@ -227,11 +270,11 @@ export default function Products() {
     },
   ];
 
-const handleTableChange = (pagination) => {
+  const handleTableChange = (pagination) => {
     setTableParams({
       pagination,
     });
- 
+
     setFilters((prev) => ({
       ...prev,
       page: pagination.current,
@@ -275,23 +318,13 @@ const handleTableChange = (pagination) => {
                   <Col>
                     <div className="filter__item__search">
                       <Select
+                        showSearch
+                        allowClear
                         style={{ width: "100%" }}
                         size="large"
                         placeholder="Select Product Type"
-                        options={[
-                          {
-                            value: "MAL",
-                            label: "MAL",
-                          },
-                          {
-                            value: "IC",
-                            label: "IC",
-                          },
-                          {
-                            value: "Explosives",
-                            label: "Explosives",
-                          },
-                        ]}
+                        options={productTypeOption || []}
+                        onChange={setSearchQuery}
                       />
                     </div>
                   </Col>
