@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import {
   Breadcrumb,
   Button,
-  Card,
   Checkbox,
   Col,
   Image,
@@ -16,8 +15,6 @@ import {
   Tag,
 } from "antd";
 import MainLayout from "@/app/components/MainLayout";
-import { redirect } from "next/navigation";
-import { EditOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { GET_COMMON, PRODUCT_LIST } from "@/app/api";
@@ -29,12 +26,10 @@ import { useDebounceCallback } from "@/app/components/common/useDebounceCallback
 const { Search } = Input;
 
 export default function Products() {
-  const [checked, setChecked] = useState(true);
   const router = useRouter();
   const { user } = useSelector((state) => state.userInfo);
   const [productList, setProductList] = useState([])
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [productTypeList, setProductTypeList] = useState([]);
   const [productTypeOption, setProductTypeOption] = useState([]);
   const [tableData, setTableData] = useState([]);

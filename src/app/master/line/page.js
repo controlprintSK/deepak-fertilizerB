@@ -1,9 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Breadcrumb, Button, Col, Input, Pagination, Row, Space, Spin, Table, Tag } from "antd";
+import { Breadcrumb, Button, Col, Input, Row, Space, Spin, Table, Tag } from "antd";
 import MainLayout from "@/app/components/MainLayout";
-import { EditOutlined } from "@ant-design/icons";
-import { redirect } from "next/navigation";
 import { postAPI } from "@/utils/apiRequest";
 import { LIST_LINE } from "@/app/api";
 import { useSelector } from "react-redux";
@@ -19,7 +17,6 @@ export default function Line() {
   const { user } = useSelector((state) => state.userInfo);
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
@@ -29,7 +26,7 @@ export default function Line() {
   const [filters, setFilters] = useState({
     Code: "",
     Name: "",
-    CompanyCode:"",
+    CompanyCode: "",
     page: tableParams?.pagination?.current,
     limit: tableParams?.pagination?.pageSize,
   });
@@ -132,7 +129,7 @@ export default function Line() {
       );
     }
   };
-  console.log("pagination", tableParams)
+
   useEffect(() => {
     const data = [];
     listLineDetails.map((val, i) => {
@@ -189,7 +186,6 @@ export default function Line() {
     <MainLayout>
       <Spin spinning={loading}>
         <div className="page_title_container">
-          {/* <div className="component__name">Master</div> */}
           <div>
             <Breadcrumb
               items={[
@@ -246,7 +242,6 @@ export default function Line() {
           </div>
         </div>
       </Spin>
-
     </MainLayout>
   );
 }

@@ -260,7 +260,6 @@ export default function ProductAdd() {
       }
     } catch (error) {
       setLoading(false);
-      console.log(error, "errore")
       displayMessage(
         ERROR_MSG_TYPE,
         'An error occurred while adding the product.',

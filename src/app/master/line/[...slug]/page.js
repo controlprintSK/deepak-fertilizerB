@@ -16,7 +16,6 @@ export default function LineAdd() {
   const [editLineData, setEditLineData] = useState();
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => state.userInfo);
-  console.log("users", user)
   useEffect(() => {
     if (params?.slug[0] == 'edit') {
       getlistbyid();
@@ -100,7 +99,6 @@ export default function LineAdd() {
     <MainLayout>
       <Spin spinning={loading}>
         <div className="page_title_container">
-          {/* <div className="component__name">Master</div> */}
           <div>
             <Breadcrumb
               items={[
