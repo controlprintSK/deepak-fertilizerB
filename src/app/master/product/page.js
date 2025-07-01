@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Breadcrumb,
   Button,
@@ -17,7 +17,7 @@ import {
 import MainLayout from "@/app/components/MainLayout";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { GET_COMMON, PRODUCT_LIST } from "@/app/api";
+import { ALL_PRODUCT_LIST, GET_COMMON, PRODUCT_LIST } from "@/app/api";
 import { getAPI, postAPI } from "@/utils/apiRequest";
 import { ERROR_MSG_TYPE } from "@/constants/hardData";
 import { displayMessage, interpolate } from "@/utils/common";
@@ -27,7 +27,7 @@ const { Search } = Input;
 
 export default function Products() {
   const router = useRouter();
-  const { user } = useSelector((state) => state.userInfo);
+  const { user } = useSelector((state) => state.userInfo || {});
   const [productList, setProductList] = useState([])
   const [loading, setLoading] = useState(false);
   const [productTypeList, setProductTypeList] = useState([]);
@@ -39,15 +39,18 @@ export default function Products() {
       pageSize: 10,
     },
   });
+  const [productCodeOptionList, setProductCodeOptionList] = useState([]);
+  const [productNameOptionList, setProductNameOptionList] = useState([]);
 
   const [filters, setFilters] = useState({
     page: tableParams?.pagination?.current,
     limit: tableParams?.pagination?.pageSize,
   });
-
+  const dropdownList = useRef(null);
   useEffect(() => {
     listproduct();
     fetchProductType();
+    fetchAllProductList();
   }, [JSON.stringify(filters)]);
   //search products
   const handleProductCodeChange = useDebounceCallback((value) => {
@@ -68,6 +71,44 @@ export default function Products() {
   const handleProductTypeChange = useDebounceCallback((value) => {
     setFilters((pre) => ({ ...pre, ProductType: value || "" }));
   }, 1000);
+
+  const fetchAllProductList = async () => {
+    setLoading(true)
+    if (dropdownList.current) {
+      setProductCodeOptionList(dropdownList.current.productCodeOptions);
+      setProductNameOptionList(dropdownList.current.productNameOptions);
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await postAPI(ALL_PRODUCT_LIST, {
+        CompanyCode: user?.CurrentCompany
+      });
+      setLoading(false);
+      if (String(res?.status).includes("200") && res?.data?.length) {
+        const productCodeOptions = res?.data.map((val, index) => ({
+          key: index,
+          value: val.ProductCode,
+          label: val.ProductCode,
+        }));
+        const productNameOptions = res?.data.map((val, index) => ({
+          key: index,
+          value: val.ProductName,
+          label: val.ProductName,
+        }));
+        dropdownList.current = { productCodeOptions, productNameOptions }
+        setProductCodeOptionList(productCodeOptions);
+        setProductNameOptionList(productNameOptions);
+      }
+    } catch (error) {
+      setLoading(false);
+      displayMessage(
+        ERROR_MSG_TYPE,
+        'An error occurred while fetching the product code and name',
+      );
+    }
+
+  };
 
   const listproduct = async () => {
     setLoading(true);
@@ -96,23 +137,30 @@ export default function Products() {
       }
     } catch (error) {
       setLoading(false);
-      console.log(error);
       displayMessage(
         ERROR_MSG_TYPE,
-        'An error occurred while fetching the list of line.',
+        'An error occurred while fetching the list of product.',
       );
     }
   };
 
   const fetchProductType = async () => {
+    setLoading(true);
     try {
       let res = await getAPI(interpolate(GET_COMMON, ['PRODUCTTYPE']));
+      setLoading(false);
       if (res?.status == 200) {
         setProductTypeList(res?.data);
       } else {
         setProductTypeList([]);
       }
-    } catch (error) { }
+    } catch (error) {
+      setLoading(false);
+      displayMessage(
+        ERROR_MSG_TYPE,
+        'An error occurred while fetching the list of product.',
+      );
+     }
   };
 
   useEffect(() => {
@@ -136,8 +184,8 @@ export default function Products() {
         Mrp: val?.Mrp,
         UOM: val?.UOM,
         CompanyCode: val?.CompanyCode,
-        SyncStatus: <Checkbox checked={val?.SyncStatus === 1}>
-          {val?.SyncStatus === 1 ? 'Enable' : 'Disable'}
+        Status: <Checkbox checked={val?.Status === 1}>
+          {val?.Status === 1 ? 'Enable' : 'Disable'}
         </Checkbox>
         ,
         Active: val?.Active ? (
@@ -237,8 +285,8 @@ export default function Products() {
     },
     {
       title: "PDF Link",
-      dataIndex: "SyncStatus",
-      key: "SyncStatus",
+      dataIndex: "Status",
+      key: "Status",
     },
 
     {
@@ -289,12 +337,44 @@ export default function Products() {
                 <Row gutter={[10, 10]}>
                   <Col>
                     <div className="filter__item__search">
-                      <Search placeholder="Search Product Name" size="large" onChange={(e) => handleProductNameChange(e.target.value)} />
+                      {/* <Search placeholder="Search Product Name" size="large" onChange={(e) => handleProductNameChange(e.target.value)} /> */}
+                      <Select
+                        allowClear
+                        size="large"
+                        showSearch
+                        placeholder="Search Product Name"
+                        filterOption={(input, option) =>
+                          option.label
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{
+                          width: "100%",
+                        }}
+                        onChange={handleProductNameChange}
+                        options={productNameOptionList}
+                      />
                     </div>
                   </Col>
                   <Col>
                     <div className="filter__item__search">
-                      <Search placeholder="Search Product Code" size="large" onChange={(e) => handleProductCodeChange(e.target.value)} />
+                      {/* <Search placeholder="Search Product Code" size="large" onChange={(e) => handleProductCodeChange(e.target.value)} /> */}
+                      <Select
+                        allowClear
+                        size="large"
+                        showSearch
+                        placeholder="Search Product Code"
+                        filterOption={(input, option) =>
+                          option.label
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{
+                          width: "100%",
+                        }}
+                        onChange={handleProductCodeChange}
+                        options={productCodeOptionList}
+                      />
                     </div>
                   </Col>
                   <Col>
@@ -328,6 +408,7 @@ export default function Products() {
               size="small"
               pagination={tableParams.pagination}
               onChange={handleTableChange}
+              data-testid="selected-name"
             />
           </div>
         </div>

@@ -54,14 +54,14 @@ export default function LoginForm({ setForgotPasswordForm }) {
       let finalUserData =
         userType == "1"
           ? {
-              CompanyCode: String(values?.PlantCode).toUpperCase(),
-              UserName: String(values?.UserName).toLowerCase(),
-              Password: values?.Password,
-            }
+            CompanyCode: String(values?.PlantCode).toUpperCase(),
+            UserName: String(values?.UserName).toLowerCase(),
+            Password: values?.Password,
+          }
           : {
-              UserName: String(values?.UserName).toLowerCase(),
-              Password: values?.Password,
-            };
+            UserName: String(values?.UserName).toLowerCase(),
+            Password: values?.Password,
+          };
 
       let res = await postAPI(LOGIN, finalUserData, {
         company: values?.CompanyCode
@@ -178,6 +178,7 @@ export default function LoginForm({ setForgotPasswordForm }) {
               ]}
             >
               <Input
+                name="PlantCode"
                 style={{ textTransform: "uppercase" }}
                 placeholder="Plant Code"
                 className={`${styles.inputText}`}

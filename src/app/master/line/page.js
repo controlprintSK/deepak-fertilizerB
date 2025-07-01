@@ -1,9 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Breadcrumb, Button, Col, Input, Row, Space, Spin, Table, Tag } from "antd";
+import React, { useState, useEffect, useRef } from "react";
+import { Breadcrumb, Button, Col, Input, Row, Select, Space, Spin, Table, Tag } from "antd";
 import MainLayout from "@/app/components/MainLayout";
-import { postAPI } from "@/utils/apiRequest";
-import { LIST_LINE } from "@/app/api";
+import { getAPI, postAPI } from "@/utils/apiRequest";
+import { ALL_LINE_LIST, LIST_LINE } from "@/app/api";
 import { useSelector } from "react-redux";
 import { EditButton } from "@/app/components/common/Button";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,8 @@ export default function Line() {
   const { user } = useSelector((state) => state.userInfo);
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [lineCodeOptionList, setLineCodeOptionList] = useState([]);
+  const [lineNameOptionList, setLineNameOptionList] = useState([]);
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
@@ -31,13 +33,16 @@ export default function Line() {
     limit: tableParams?.pagination?.pageSize,
   });
   const router = useRouter();
+  const dropdownList = useRef(null);
 
   const handleLineCodeChange = useDebounceCallback((value) => {
-    if (value && value.length > 3) {
-      setFilters((prev) => ({ ...prev, Code: value?.trim() }));
-    } else {
-      setFilters((prev) => ({ ...prev, Code: "" }));
-    }
+    console.log("code value", value)
+    setFilters((prev) => ({ ...prev, Code: value?.trim() } || { Code: '' }));
+    // if (value && value.length > 3) {
+    //   setFilters((prev) => ({ ...prev, Code: value?.trim() }));
+    // } else {
+    //   setFilters((prev) => ({ ...prev, Code: "" }));
+    // }
   }, 1000);
 
   const handleLineNameChange = useDebounceCallback((value) => {
@@ -56,6 +61,32 @@ export default function Line() {
     }
   }, 1000);
 
+  const fetchAllLineList = async () => {
+    if (dropdownList.current) {
+      setLineCodeOptionList(dropdownList.current.codeOptions);
+      setLineNameOptionList(dropdownList.current.nameOptions);
+      setLoading(false);
+      return;
+    }
+    const res = await postAPI(ALL_LINE_LIST, {
+      CompanyCode: user?.CurrentCompany
+    });
+    if (String(res?.status).includes("200") && res?.data?.length) {
+      const codeOptions = res?.data.map((val) => ({
+        key: val.id,
+        value: val.Code,
+        label: val.Code,
+      }));
+      const nameOptions = res?.data.map((val) => ({
+        key: val.id,
+        value: val.Name,
+        label: val.Name,
+      }));
+      dropdownList.current = { codeOptions, nameOptions }
+      setLineCodeOptionList(codeOptions);
+      setLineNameOptionList(nameOptions);
+    }
+  };
 
   const handleOpenPage = () => {
     router.push("/master/line/add");
@@ -94,9 +125,10 @@ export default function Line() {
   ];
 
   useEffect(() => {
-    listLine()
+    listLine();
+    fetchAllLineList();
   }, [JSON.stringify(filters)])
-
+  console.log("filters", filters)
   const listLine = async () => {
     setLoading(true);
     try {
@@ -138,21 +170,12 @@ export default function Line() {
         Code: val?.Code,
         Name: val?.Name,
         CompanyCode: val?.CompanyCode,
-        Status: val?.Active ? (
+        Status: (
           <Tag
-            color="green"
+            color={val?.Active === 1 ? "green" : "red"}
             style={{ cursor: 'pointer' }}
-            onClick={() => statusByCode(val?.Code)}
           >
-            Active
-          </Tag>
-        ) : (
-          <Tag
-            color="red"
-            style={{ cursor: 'pointer' }}
-            onClick={() => statusByCode(val?.Code)}
-          >
-            Inactive
+            {val?.Active ? "Active" : "Inactive"}
           </Tag>
         ),
         action: (
@@ -206,12 +229,44 @@ export default function Line() {
                 <Row gutter={[10, 10]}>
                   <Col>
                     <div className="filter__item__search">
-                      <Search placeholder="Search Line Code" size="large" onChange={(e) => handleLineCodeChange(e.target.value)} />
+                      {/* <Search placeholder="Search Line Code" size="large" onChange={(e) => handleLineCodeChange(e.target.value)} /> */}
+                      <Select
+                        allowClear
+                        size="large"
+                        showSearch
+                        placeholder="Search Line Code"
+                        filterOption={(input, option) =>
+                          option.label
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{
+                          width: "100%",
+                        }}
+                        onChange={handleLineCodeChange}
+                        options={lineCodeOptionList}
+                      />
                     </div>
                   </Col>
                   <Col>
                     <div className="filter__item__search">
-                      <Search placeholder="Search Line Name" size="large" onChange={(e) => handleLineNameChange(e.target.value)} />
+                      {/* <Search placeholder="Search Line Name" size="large" onChange={(e) => handleLineNameChange(e.target.value)} /> */}
+                      <Select
+                        allowClear
+                        size="large"
+                        showSearch
+                        placeholder="Search Line Name"
+                        filterOption={(input, option) =>
+                          option.label
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{
+                          width: "100%",
+                        }}
+                        onChange={handleLineNameChange}
+                        options={lineNameOptionList}
+                      />
                     </div>
                   </Col>
                   <Col>

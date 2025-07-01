@@ -46,10 +46,12 @@ export const LIST_LINE = "line/listLine";
 export const ADD_LINE = "line/addLine";
 export const LINE_LISTBYID = "line/listLineById/%s";
 export const LINE_UPDATEBYID = "line/updateLine";
+export const ALL_LINE_LIST = "line/listLineDropdown";
 // Product Master
 export const PRODUCT_LIST = "product/listProducts";
 export const ADD_PRODUCT = "product";
 export const PRODUCT_LISTBYID = "product/%s";
+export const ALL_PRODUCT_LIST = "product/listProductDropdown";
 
 // Customer
 export const LIST_CUSTOMER = "customerMaster/listCustomer";
@@ -57,3 +59,4 @@ export const ADD_CUSTOMER = "customerMaster/addCustomer";
 export const UPDATE_CUSTOMER = "customerMaster/updateCustomer/%s";
 export const ALL_CUSTOMER_LIST = "customerMaster/listAllCustomer";
 export const GET_CUSTOMER_BYCODE = "customerMaster/listCustomerById/%s";
+

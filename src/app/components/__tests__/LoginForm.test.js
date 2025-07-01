@@ -75,7 +75,7 @@ describe("LoginForm Component", () => {
   it("fills in username and password, and submits the form", async () => {
     const { container } = render(<LoginForm />);
     const CompanyCodeInput = container.querySelector(
-      'input[name="CompanyCode"]'
+      'input[name="PlantCode"]'
     );
     const usernameInput = container.querySelector('input[name="UserName"]');
     const passwordInput = container.querySelector('input[name="Password"]');
@@ -88,8 +88,8 @@ describe("LoginForm Component", () => {
       fireEvent.click(submitButton);
     });
 
-    // Assert values (inputs hold expected text)
-    expect(usernameInput).toHaveValue("TestUser"); // lowercased by onInput handler
+    expect(CompanyCodeInput).toHaveValue("TEST");
+    expect(usernameInput).toHaveValue("TestUser");
     expect(passwordInput).toHaveValue("123456");
   });
 
