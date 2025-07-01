@@ -1,15 +1,12 @@
-import { accessToken, dbcode } from "@/redux/userSlice";
+import { accessToken } from "@/redux/userSlice";
 import axios from "axios";
 import store from "@/store/index";
-
-const dbCode = dbcode(store?.getState?.());
+import { REFRESH_TOKEN } from "@/app/api";
 
 export const AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    ...(dbCode && { company: dbCode }),
-    // company: dbCode ? dbCode : '',
   },
 });
 
@@ -17,7 +14,6 @@ export const AxiosInstanceWithoutLoader = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    ...(dbCode && { company: dbCode }),
     // company: dbCode ? dbCode : '',
   },
 });

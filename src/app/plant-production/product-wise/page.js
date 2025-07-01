@@ -33,7 +33,7 @@ import { useRouter } from "next/navigation";
 import MainLayout from "@/app/components/MainLayout";
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-export default function Product() {
+export default function PlantProduct() {
     //   let slug = getUserSlug();
     let slug = '';
     const router = useRouter();
@@ -157,9 +157,9 @@ export default function Product() {
 
     const columnsProductReport = [
         {
-            title: "Batch No.",
-            dataIndex: "batchNo",
-            key: "batchNo",
+            title: "Product",
+            dataIndex: "product",
+            key: "product",
         },
         {
             title: "Quantity",
@@ -167,43 +167,54 @@ export default function Product() {
             key: "quantity",
         },
         {
-            title: "MFG Date",
-            dataIndex: "batchMfgDate",
-            key: "batchMfgDate",
+            title: "Action",
+            dataIndex: "action",
+            key: "action",
+            width: 150,
         },
     ];
 
     const dataPlantProduct = [
         {
-            "key": "1",
-            "batchNo": "B1004",
-            "quantity": "2,40,356",
-            "batchMfgDate": "25 March 2025"
-        },
-        {
-            "key": "2",
-            "batchNo": "B1004",
-            "quantity": "2,40,356",
-            "batchMfgDate": "25 March 2025"
-        },
-        {
-            "key": "3",
-            "batchNo": "B1004",
-            "quantity": "2,40,356",
-            "batchMfgDate": "25 March 2025"
-        },
-        {
-            "key": "4",
-            "batchNo": "B1004",
-            "quantity": "2,40,356",
-            "batchMfgDate": "25 March 2025"
+            key: "1",
+            product: "CROPTEK 9:24:24",
+            quantity: "2,40,356",
+            action: (
+                <>
+                    <Space size="large">
+                        <Link
+                            href={`scanned-quantity/scanned-quantity-state`}>
+                            <span> <Button
+                                type="default"
+                                color="primary"
+                                variant="text"
+                                size="small"
+                            >Download
+                            </Button>
+                            </span>
+                        </Link>
+                        <Link
+                            href={`/plant-production/batch-wise`}>
+                            <span>
+                                <Button
+                                    shape="circle"
+                                    icon={<ArrowRightOutlined />}
+                                    type="default"
+                                    color="primary" variant="outlined" size="small"
+                                />
+                            </span>
+                        </Link>
+                    </Space>
+                </>
+
+            ),
         }
     ]
     const plantProductInfo =
     {
-        productName: "CROPTEK 9:24:24",
-        quantity: "2,40,356",
-        plantName: "Taloja (Maharashtra)"
+        plantCode: "P001",
+        plantName: "Taloja (Maharashtra)",
+        quantity: "2,40,356"
     }
 
     // useEffect(() => {
@@ -245,14 +256,35 @@ export default function Product() {
                     Plant Production
                 </Space>
             ),
+
         },
+        {
+            title: "Plant Product",
+        }
+
     ];
 
     return (
         <MainLayout>
             <div className="page_title_container">
                 <div className="component__name">
-                    <Breadcrumb separator="" items={breadcrumbItems} />
+                    <Breadcrumb
+                        items={[
+                            {
+                                title: (
+                                    <Space>
+                                        <LeftOutlined onClick={() => router.back()} />
+                                        Plant Production
+                                    </Space>
+                                ),
+
+                            },
+                            {
+                                title: "Product Wise",
+                            }
+
+                        ]}
+                    />
                 </div>
             </div>
             <div className="qc_page_container">
@@ -300,7 +332,7 @@ export default function Product() {
                                     <div className="mb-3">
                                         <div>Plant Code</div>
                                         <h3 className="value">
-                                            {plantProductInfo?.productName || "N/A"}
+                                            {plantProductInfo?.plantCode || "N/A"}
                                         </h3>
                                     </div>
                                     <div className="mb-3">
