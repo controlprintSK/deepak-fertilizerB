@@ -62,30 +62,41 @@ export default function Line() {
   }, 1000);
 
   const fetchAllLineList = async () => {
+    setLoading(true)
     if (dropdownList.current) {
       setLineCodeOptionList(dropdownList.current.codeOptions);
       setLineNameOptionList(dropdownList.current.nameOptions);
       setLoading(false);
       return;
     }
-    const res = await postAPI(ALL_LINE_LIST, {
-      CompanyCode: user?.CurrentCompany
-    });
-    if (String(res?.status).includes("200") && res?.data?.length) {
-      const codeOptions = res?.data.map((val) => ({
-        key: val.id,
-        value: val.Code,
-        label: val.Code,
-      }));
-      const nameOptions = res?.data.map((val) => ({
-        key: val.id,
-        value: val.Name,
-        label: val.Name,
-      }));
-      dropdownList.current = { codeOptions, nameOptions }
-      setLineCodeOptionList(codeOptions);
-      setLineNameOptionList(nameOptions);
+    try {
+      const res = await postAPI(ALL_LINE_LIST, {
+        CompanyCode: user?.CurrentCompany
+      });
+      setLoading(false)
+      if (String(res?.status).includes("200") && res?.data?.length) {
+        const codeOptions = res?.data.map((val) => ({
+          key: val.id,
+          value: val.Code,
+          label: val.Code,
+        }));
+        const nameOptions = res?.data.map((val) => ({
+          key: val.id,
+          value: val.Name,
+          label: val.Name,
+        }));
+        dropdownList.current = { codeOptions, nameOptions }
+        setLineCodeOptionList(codeOptions);
+        setLineNameOptionList(nameOptions);
+      }
+    } catch (error) {
+      setLoading(false);
+      displayMessage(
+        ERROR_MSG_TYPE,
+        'An error occurred while fetching the list of line.',
+      );
     }
+
   };
 
   const handleOpenPage = () => {

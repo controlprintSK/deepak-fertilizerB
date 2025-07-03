@@ -2,10 +2,11 @@ import React from 'react';
 import { render, screen, fireEvent, act, within, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Breadcrumb } from 'antd';
-import { postAPI, putAPI } from '@/utils/apiRequest';
+import { getAPI, postAPI, putAPI } from '@/utils/apiRequest';
 import * as reactRedux from 'react-redux';
 import Products from '@/app/master/product/page';
 import userEvent from '@testing-library/user-event';
+import { AddButton, EditButton } from '@/app/components/common/Button';
 
 const mockPush = jest.fn()
 jest.mock('next/navigation', () => ({
@@ -26,6 +27,9 @@ const mockState = {
     userModules: [],
     pageRight: [],
   },
+  navBarInfo: {
+    ACTIVE_PAGE: "MODULE_2-PAGE_23_1_2",
+  }
 };
 
 jest.spyOn(reactRedux, 'useSelector').mockImplementation((selector) =>
@@ -80,7 +84,7 @@ const mockProducts = [
     id: 5,
     ProductCode: "PRODUCT5",
     ProductName: "product5",
-    ProductType: "MAL",
+    ProductType: "IP",
     CompanyCode: "MKD",
     ProductImage: "/products/ProductImage-1750412998553-5.png",
     Weight: 52,
@@ -106,17 +110,69 @@ const mockProductType = [
   }
 ]
 
-jest.mock('@/utils/apiRequest', () => ({
-  postAPI: jest.fn(() =>
-    Promise.resolve({
-      status: 200,
-      data: {
-        docs: mockProducts,
-        totalPages: 1
-      }
-    })
-  )
+// jest.mock('@/utils/apiRequest', () => ({
+//   postAPI: jest.fn(() =>
+//     Promise.resolve({
+//       status: 200,
+//       data: {
+//         docs: mockProducts,
+//         totalPages: 1
+//       }
+//     })
+//   ),
+//   getAPI: jest.fn(() =>
+//     Promise.resolve({
+//       status: 200,
+//       data: {
+//         docs: mockProductType,
+//         totalPages: 1
+//       }
+//     })
+//   )
+// }));
+
+jest.mock("@/utils/apiRequest", () => ({
+  postAPI: jest.fn(),
+  getAPI: jest.fn(),
 }));
+
+beforeEach(() => {
+  postAPI.mockResolvedValue({
+    status: 200,
+    data: {
+      docs: mockProducts,
+      totalPages: 1
+    }
+  });
+  getAPI.mockResolvedValue({
+    status: 200,
+    data: mockProductType,
+  });
+});
+// jest.mock('@/utils/apiRequest', () => ({
+//   postAPI: jest.fn((url) => {
+//     if (url === '/master/product') {
+//       return Promise.resolve({
+//         status: 200,
+//         data: {
+//           docs: mockProducts,
+//           totalDocs: mockProducts.length,
+//           totalPages: 1,
+//         },
+//       });
+//     }
+//     return Promise.resolve({ status: 404 });
+//   }),
+//   getAPI: jest.fn((url) => {
+//     if (url === '/common/PRODUCTTYPE') {
+//       return Promise.resolve({
+//         status: 200,
+//         data: mockProductType,
+//       });
+//     }
+//     return Promise.resolve({ status: 404 });
+//   }),
+// }));
 
 
 jest.mock('antd', () => {
@@ -233,39 +289,122 @@ describe('Products Component', () => {
   });
 
 
-  //   it('search by product code', async () => {
-  //     const { container } = render(<Products />)
-  //     const codeInput = container.querySelector('input[placeholder = "Search Product Code"]')
-  //     expect(codeInput).toBeInTheDocument();
+  // it('search by product code', async () => {
+  //   const { container } = render(<Products />)
+  //   const codeInput = container.querySelector('input[placeholder = "Search Product Code"]')
+  //   expect(codeInput).toBeInTheDocument();
 
-  //     await userEvent.type(codeInput, "P0001")
-  //     expect(codeInput).toHaveValue("P0001")
-  //   })
+  //   await userEvent.type(codeInput, "P0001")
+  //   expect(codeInput).toHaveValue("P0001")
+  // })
 
-  //   it('Select by product type', async () => {
-  //     const { container } = render(<Products />);
+  it("loads and selects a product type from fetched options", async () => {
+    const user = userEvent.setup();
 
-  //     const selectTrigger = container.querySelector('.ant-select-selector');
-  //     expect(selectTrigger).toBeInTheDocument();
-  //     fireEvent.mouseDown(selectTrigger);
+    render(<Products />);
 
-  //     const option = await screen.findByTitle('MAL');
-  //     expect(option).toBeInTheDocument();
-  //     fireEvent.click(option);
+    // Find the select trigger by testid
+    const selectTrigger = screen.getByTestId("productTypeSelect");
+    expect(selectTrigger).toBeInTheDocument();
 
-  //     const selectedValue = container.querySelector('.ant-select-selection-item');
-  //     expect(selectedValue).toHaveTextContent('MAL');
+    // Click the trigger to open dropdown
+    await user.click(selectTrigger);
 
-  //   })
+    // Now wait for the dropdown option to appear
+    const option = await screen.findByText("MAL");
+    expect(option).toBeInTheDocument();
 
-  //   it('Navigate to add product form',async()=>{
-  //     const user = userEvent.setup();
-  //     render(<Products/>)
-  //     const addProduct = screen.getByRole('button', { name: /add product/i })
-  //     expect(addProduct).toBeInTheDocument();
+    // Click the option
+    await user.click(option);
 
-  //     await user.click(addProduct)
-  //     expect(mockPush).toHaveBeenCalledWith('/master/products/add')
-  //   })
+    // Check that the selected value is visible
+    const selectedValue = screen.getByText("MAL");
+    expect(selectedValue).toBeInTheDocument();
+  });
 
+
+  // it('navigates to add product form', async () => {
+  //   const user = userEvent.setup();
+
+  //   // Clear mockPush
+  //   mockPush.mockClear();
+
+  //   const mockState = {
+  //     userInfo: {
+  //       user: { name: 'Test User', email: 'test@example.com' },
+  //     },
+  //     rightInfo: {
+  //       userModules: [],
+  //       pageRight: [],
+  //     },
+  //     navBarInfo: {
+  //       ACTIVE_PAGE: "MODULE_2-PAGE_23_1_2",
+  //     }
+  //   };
+
+  //   jest.spyOn(reactRedux, 'useSelector').mockImplementation((selector) =>
+  //     selector(mockState)
+  //   );
+
+
+  //   render(<Products />);
+
+  //   const addButton = await screen.findByTestId('add-product-btn');
+  //   expect(addButton).toBeInTheDocument();
+
+  //   await user.click(addButton);
+
+  //   expect(mockPush).toHaveBeenCalledWith('/master/products/add');
+  // });
+  // it('navigates to add product form', async () => {
+  //   const user = userEvent.setup();
+  //   render(<Products />);
+
+  //   screen.debug();
+
+  //   const addButton = screen.getByTestId('add-product-btn');
+  //   expect(addButton).toBeInTheDocument();
+
+  //   await user.click(addButton);
+  //   expect(mockPush).toHaveBeenCalledWith('/master/product/add');
+  // });
+
+  it("renders nothing if no permission", () => {
+    render(<AddButton hasPermission={false} text="Add new product" />);
+    expect(screen.queryByText("Add new product")).not.toBeInTheDocument();
+  });
+  it("renders nothing if no permission", () => {
+    render(<EditButton hasPermission={false} text="Add new product" />);
+    expect(screen.queryByText("Add new product")).not.toBeInTheDocument();
+  });
+  // it("renders button if has permission", () => {
+  //   render(<AddButton hasPermission={true} text="Add new product" />);
+  //   expect(screen.getByRole("button", { name: /add new product/i })).toBeInTheDocument();
+  // });
+
+  // it("renders AddButton and clicks it by text", async () => {
+  //   const user = userEvent.setup();
+  //   const mockFn = jest.fn();
+
+  //   render(
+  //     <AddButton
+  //       text="Add new product"
+  //       _function={mockFn}
+  //       hasPermission={true}
+  //     />
+  //   );
+
+  //   // Find by text
+  //   const btn = screen.getByRole("button", { name: /add new product/i });
+
+
+  //   console.log("Button element:", btn);
+  //   console.log("Button textContent:", btn.textContent);
+
+  //   expect(btn).toBeInTheDocument();
+
+  //   await user.click(btn);
+  //   expect(mockFn).toHaveBeenCalled();
+
+  // });
 });
