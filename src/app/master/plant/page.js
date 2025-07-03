@@ -17,7 +17,7 @@ import { EditOutlined, SearchOutlined } from "@ant-design/icons";
 import { redirect, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { postAPI, putAPI } from "@/utils/apiRequest";
-import { LIST_COMPANY } from "@/app/api";
+import { LIST_COMPANY, LIST_COMPANY_CONTACT } from "@/app/api";
 import { ERROR_MSG_TYPE, SUCCESS_MSG_TYPE } from "@/constants/hardData";
 import { displayMessage, interpolate } from "@/utils/common";
 import { AddButton } from "@/app/components/common/Button";
@@ -138,20 +138,32 @@ export default function Plant() {
     setPlantTableData(data);
   }, [companyList]);
 
-  const handleTableChange = (page, pageSize) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      page: page,
-      limit: pageSize,
-    }));
+  // const handleTableChange = (page, pageSize) => {
+  //   setFilters((prevFilters) => ({
+  //     ...prevFilters,
+  //     page: page,
+  //     limit: pageSize,
+  //   }));
 
-    setTableParams((prevState) => ({
-      ...prevState,
-      pagination: {
-        ...prevState.pagination,
-        current: page,
-        pageSize: pageSize,
-      },
+  //   setTableParams((prevState) => ({
+  //     ...prevState,
+  //     pagination: {
+  //       ...prevState.pagination,
+  //       current: page,
+  //       pageSize: pageSize,
+  //     },
+  //   }));
+  // };
+
+  const handleTableChange = (pagination) => {
+    setTableParams({
+      pagination,
+    });
+
+    setFilters((prev) => ({
+      ...prev,
+      page: pagination.current,
+      limit: pagination.pageSize,
     }));
   };
 
@@ -552,6 +564,8 @@ export default function Plant() {
             className="qc_mt_2"
             dataSource={plantTableData}
             columns={ColumnsPlant}
+            pagination={tableParams.pagination}
+            onChange={handleTableChange}
             size="small"
           />
         </div>

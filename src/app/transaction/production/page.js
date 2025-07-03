@@ -1,11 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Breadcrumb,
   Button,
   Col,
   DatePicker,
   Pagination,
+  Popconfirm,
   Row,
   Select,
   Space,
@@ -18,13 +19,219 @@ import {
   DeleteOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import moment from "moment";
+import dayjs from "dayjs";
+import { deleteAPI, postAPI } from "@/utils/apiRequest";
+import { useSelector } from "react-redux";
+import { displayMessage, interpolate } from "@/utils/common";
+import { ERROR_MSG_TYPE, SUCCESS_MSG_TYPE } from "@/constants/hardData";
+import {
+  ALL_PRODUCT_LIST,
+  DELETE_PRODUCTION,
+  GET_BATCH_PRODUCTION,
+  GET_PRODUCTION_LIST,
+  LIST_ALL_LINE,
+} from "@/app/api";
 const { RangePicker } = DatePicker;
 
 export default function Production() {
+  const router = useRouter();
+  const { user } = useSelector((state) => state.userInfo);
+  const [loading, setLoading] = useState(false);
+  const [productOptionList, setProductOptionList] = useState([]);
+  const [productBatchList, setProductBatchList] = useState([]);
+  const [productLineList, setProductLineList] = useState([]);
+  const [productionData, setProductionData] = useState([]);
+  const [productionTableData, setProductionTableData] = useState([]);
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const [filters, setFilters] = useState({
+    CompanyCode: user?.CurrentCompany ? user?.CurrentCompany : "",
+    Line: "",
+    ProductCode: "",
+    BatchNumber: "",
+    StartDate: dayjs().subtract(1, "week").format("DD/MM/YYYY"),
+    EndDate: dayjs().format("DD/MM/YYYY"),
+    page: tableParams?.pagination?.current,
+    limit: tableParams?.pagination?.pageSize,
+  });
+
   const handleOpenPage = () => {
-    redirect("/transaction/production-add");
+    router.push("/transaction/production/add");
   };
+
+  const fetchProductList = async () => {
+    const res = await postAPI(ALL_PRODUCT_LIST, {
+      CompanyCode: user?.CurrentCompany,
+    });
+    if (String(res?.status).includes("20") && res?.data?.length) {
+      let optList = res?.data?.map((val, ind) => ({
+        key: val?.ProductCode,
+        value: val?.ProductCode,
+        label: val?.ProductCode + " | " + val?.ProductName,
+      }));
+      setProductOptionList(optList);
+    }
+  };
+
+  const fetchBatchList = async () => {
+    const res = await postAPI(GET_BATCH_PRODUCTION, {
+      CompanyCode: user?.CurrentCompany,
+      ProductionStatus: [0, 1, 2, 10],
+    });
+    if (String(res?.status).includes("20") && res?.data?.length) {
+      let optList = res?.data?.map((val, ind) => ({
+        key: val?.BatchNumber,
+        value: val?.BatchNumber,
+        label: val?.BatchNumber,
+      }));
+
+      optList = Array.from(
+        new Map(optList.map((item) => [item.key, item])).values()
+      );
+
+      setProductBatchList(optList);
+    }
+  };
+
+  const fetchLineList = async () => {
+    const res = await postAPI(LIST_ALL_LINE, {
+      CompanyCode: user?.CurrentCompany,
+    });
+    if (String(res?.status).includes("20") && res?.data?.length) {
+      let optList = res?.data?.map((val, ind) => ({
+        key: val?.id,
+        value: val?.Code,
+        label: `${val?.Name}`,
+      }));
+      setProductLineList(optList);
+    }
+  };
+
+  useEffect(() => {
+    fetchBatchList();
+    fetchProductList();
+    fetchLineList();
+  }, []);
+
+  const fetchProductionList = async () => {
+    try {
+      setLoading(true);
+      let res = await postAPI(GET_PRODUCTION_LIST, filters);
+      setLoading(false);
+      if (String(res?.status).includes("20")) {
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: res?.data?.totalResults,
+          },
+        });
+        setProductionData(res?.data?.results);
+      } else {
+        displayMessage(ERROR_MSG_TYPE, res.message);
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProductionList();
+  }, [JSON.stringify(filters)]);
+
+  useEffect(() => {
+    setFilters((pre) => ({
+      ...pre,
+      page: tableParams?.pagination?.current,
+      limit: tableParams?.pagination?.pageSize,
+    }));
+  }, [JSON.stringify(tableParams)]);
+
+  const handleProductChange = (value) => {
+    setFilters((pre) => ({ ...pre, ProductCode: value || "" }));
+  };
+
+  const handleBatchChange = (value) => {
+    setFilters((pre) => ({ ...pre, BatchNumber: value || "" }));
+  };
+
+  const handleLineChange = (value) => {
+    setFilters((pre) => ({ ...pre, Line: value || "" }));
+  };
+
+  const handleEdit = (_id) => {
+    router.push(`production/edit/${_id}`);
+  };
+
+  const handleDelete = async (id) => {
+    setLoading(true);
+    try {
+      const res = await deleteAPI(interpolate(DELETE_PRODUCTION, [id]));
+      setLoading(false);
+      if (res?.status === 200) {
+        displayMessage(SUCCESS_MSG_TYPE, res?.message);
+        setProductionData(productionData.filter((item) => item.id !== id));
+      } else {
+        displayMessage(ERROR_MSG_TYPE, res?.message);
+      }
+    } catch (error) {
+      setLoading(false);
+      displayMessage(ERROR_MSG_TYPE, error?.message);
+    }
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    let data = [];
+
+    productionData?.forEach((val, i) => {
+      data.push({
+        key: i.toString(),
+        id: val?.id,
+        dateTime: moment(val?.createdAt).format("MMM DD YYYY h:mm a"),
+        plantName: val?.CompanyCode,
+        lineNo: val?.Line,
+        productName: val?.ProductName,
+        productCode: val?.ProductCode,
+        batchNo: val?.BatchNumber,
+        mfgDate: val?.MfgDate,
+        expDate: val?.ExpDate,
+        batchSize: val?.BatchSize,
+        remarks: val?.Remark,
+        action: (
+          <Space>
+            <Button
+              icon={<EditOutlined />}
+              key={`edit_${i}`}
+              size="small"
+              onClick={() => handleEdit(val?.id)}
+            />
+            <Popconfirm
+              title="Sure to delete?"
+              onConfirm={() => handleDelete(val?.id)}
+            >
+              <Button
+                icon={<DeleteOutlined />}
+                type="primary"
+                danger
+                size="small"
+              />
+            </Popconfirm>
+          </Space>
+        ),
+      });
+    });
+    setLoading(false);
+    setProductionTableData(data);
+  }, [productionData]);
+
   const columns = [
     {
       title: "Date & Time",
@@ -83,33 +290,6 @@ export default function Production() {
     },
   ];
 
-  const dataSource = [
-    {
-      key: "1",
-      dateTime: (
-        <>
-          <div>10 March 2025</div>
-          <div>12:30 PM</div>
-        </>
-      ),
-      plantName: "Taloja (Maharashtra) ",
-      lineNo: "01",
-      productName: "CROPTEK 9:24:24",
-      productCode: "A014",
-      batchNo: "B1002",
-      mfgDate: "25 March 2025",
-      expDate: "25 March 2026",
-      batchSize: "2000",
-      remarks: "Lorem Ipsum is simply dummy text.........",
-      action: (
-        <Space>
-          <Button icon={<EditOutlined />} size="small" />
-          <Button icon={<DeleteOutlined />} size="small" danger />
-        </Space>
-      ),
-    },
-  ];
-
   return (
     <MainLayout>
       <div className="page_title_container">
@@ -134,31 +314,17 @@ export default function Production() {
               <Row gutter={[10, 10]}>
                 <Col>
                   <div className="filter__item__search">
-                    <RangePicker size="large" />
-                  </div>
-                </Col>
-                <Col>
-                  <div className="filter__item">
-                    <Select
-                      style={{
-                        width: "100%",
-                      }}
+                    <RangePicker
                       size="large"
-                      placeholder="Plant Name"
-                      options={[
-                        {
-                          value: "Plant Name 1",
-                          label: "Plant Name 1",
-                        },
-                        {
-                          value: "Plant Name 2",
-                          label: "Plant Name 2",
-                        },
-                        {
-                          value: "Plant Name 3",
-                          label: "Plant Name 3",
-                        },
-                      ]}
+                      format="DD/MM/YYYY"
+                      onChange={(dates, dateStrings) => {
+                        setFilters((prev) => ({
+                          ...prev,
+                          StartDate: dateStrings[0],
+                          EndDate: dateStrings[1],
+                        }));
+                      }}
+                      defaultValue={[dayjs().subtract(1, "week"), dayjs()]}
                     />
                   </div>
                 </Col>
@@ -169,46 +335,30 @@ export default function Production() {
                         width: "100%",
                       }}
                       size="large"
-                      placeholder="Line No."
-                      options={[
-                        {
-                          value: "Line No. 1",
-                          label: "Line No. 1",
-                        },
-                        {
-                          value: "Line No. 2",
-                          label: "Line No. 2",
-                        },
-                        {
-                          value: "Line No. 3",
-                          label: "Line No. 3",
-                        },
-                      ]}
+                      disabled
+                      defaultValue={
+                        user?.CurrentCompany ? user?.CurrentCompany : ""
+                      }
                     />
                   </div>
                 </Col>
                 <Col>
                   <div className="filter__item">
                     <Select
+                      showSearch
+                      allowClear
+                      size="large"
+                      placeholder="Line Code"
+                      filterOption={(input, option) =>
+                        option.label
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
                       style={{
                         width: "100%",
                       }}
-                      size="large"
-                      placeholder="Product Name/Code"
-                      options={[
-                        {
-                          value: "Product/Code 1",
-                          label: "Product/Code 1",
-                        },
-                        {
-                          value: "Product/Code 2",
-                          label: "Product/Code 2",
-                        },
-                        {
-                          value: "Product/Code 3",
-                          label: "Product/Code 3",
-                        },
-                      ]}
+                      onChange={handleLineChange}
+                      options={productLineList}
                     />
                   </div>
                 </Col>
@@ -216,25 +366,39 @@ export default function Production() {
                   <div className="filter__item">
                     <Select
                       allowClear
+                      showSearch
                       size="large"
-                      placeholder="Batch No."
+                      placeholder="Product"
+                      filterOption={(input, option) =>
+                        option.label
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
                       style={{
                         width: "100%",
                       }}
-                      options={[
-                        {
-                          value: "Batch No. 1",
-                          label: "Batch No. 1",
-                        },
-                        {
-                          value: "Batch No. 2",
-                          label: "Batch No. 2",
-                        },
-                        {
-                          value: "Batch No. 3",
-                          label: "Batch No. 3",
-                        },
-                      ]}
+                      onChange={handleProductChange}
+                      options={productOptionList}
+                    />
+                  </div>
+                </Col>
+                <Col>
+                  <div className="filter__item">
+                    <Select
+                      allowClear
+                      showSearch
+                      size="large"
+                      filterOption={(input, option) =>
+                        option.label
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                      placeholder="Batch Code"
+                      style={{
+                        width: "100%",
+                      }}
+                      onChange={handleBatchChange}
+                      options={productBatchList}
                     />
                   </div>
                 </Col>
@@ -250,7 +414,7 @@ export default function Production() {
         <div className="grid_list_container">
           <Table
             className="qc_mt_2"
-            dataSource={dataSource}
+            dataSource={productionTableData}
             columns={columns}
             size="small"
           />

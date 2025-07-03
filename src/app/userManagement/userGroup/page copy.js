@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {
   Breadcrumb,
   Button,
+  Checkbox,
   Col,
   Form,
   Input,
@@ -87,7 +88,8 @@ export default function UserGroup() {
               }}
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
-              autoComplete="off">
+              autoComplete="off"
+            >
               <Row gutter={[24, 16]} align="middle">
                 <Col span={6}>
                   <Form.Item
@@ -98,7 +100,8 @@ export default function UserGroup() {
                         required: true,
                         message: "Please enter Group Name!",
                       },
-                    ]}>
+                    ]}
+                  >
                     {isAddingGroup ? <Input /> : <div>----</div>}
                   </Form.Item>
                 </Col>
@@ -111,7 +114,8 @@ export default function UserGroup() {
                         required: true,
                         message: "Please enter Group Code!",
                       },
-                    ]}>
+                    ]}
+                  >
                     {isAddingGroup ? <Input /> : <div>----</div>}
                   </Form.Item>
                 </Col>
@@ -133,13 +137,15 @@ export default function UserGroup() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "flex-end",
-                  }}>
+                  }}
+                >
                   <Form.Item label={null}>
                     {!isAddingGroup ? (
                       <Button
                         type="primary"
                         size="small"
-                        onClick={() => setIsAddingGroup(true)}>
+                        onClick={() => setIsAddingGroup(true)}
+                      >
                         Add New Group
                       </Button>
                     ) : (
@@ -148,14 +154,16 @@ export default function UserGroup() {
                           <Button
                             className="link_primary"
                             type="link"
-                            htmlType="submit">
+                            htmlType="submit"
+                          >
                             Save
                           </Button>
                           <Button
                             className="link"
                             type="link"
                             htmlType="submit"
-                            onClick={() => setIsAddingGroup(false)}>
+                            onClick={() => setIsAddingGroup(false)}
+                          >
                             Cancel
                           </Button>
                         </Space>
@@ -176,7 +184,8 @@ export default function UserGroup() {
                 span: 24,
               }}
               form={editform}
-              onFinish={onFinishEdit}>
+              onFinish={onFinishEdit}
+            >
               <Row gutter={[24, 16]} align="middle">
                 <Col span={6}>
                   <Form.Item
@@ -187,7 +196,8 @@ export default function UserGroup() {
                         required: true,
                         message: "Please enter Group Name!",
                       },
-                    ]}>
+                    ]}
+                  >
                     {isEditingGroup ? <Input /> : <div>Role Name</div>}
                   </Form.Item>
                 </Col>
@@ -213,7 +223,8 @@ export default function UserGroup() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "flex-end",
-                  }}>
+                  }}
+                >
                   {!isEditingGroup ? (
                     <Form.Item label="Action" name="Action">
                       <Button
@@ -227,14 +238,16 @@ export default function UserGroup() {
                       <Button
                         className="link_primary"
                         type="link"
-                        htmlType="submit">
+                        htmlType="submit"
+                      >
                         Save
                       </Button>
                       <Button
                         className="link"
                         type="link"
                         htmlType="submit"
-                        onClick={() => setIsEditingGroup(false)}>
+                        onClick={() => setIsEditingGroup(false)}
+                      >
                         Cancel
                       </Button>
                     </Space>

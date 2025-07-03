@@ -34,7 +34,7 @@ export default function Customer() {
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
-      pageSize: 10,
+      pageSize: 1,
     },
   });
 
@@ -83,11 +83,11 @@ export default function Customer() {
   }, []);
 
   const handleCustomerCodeChange = (value) => {
-    setFilters((pre) => ({ ...pre, CustomerCode: value || "" }));
+    setFilters((pre) => ({ ...pre, page: 1, CustomerCode: value || "" }));
   };
 
   const handleCustomerNameChange = (value) => {
-    setFilters((pre) => ({ ...pre, CustomerName: value || "" }));
+    setFilters((pre) => ({ ...pre, page: 1, CustomerName: value || "" }));
   };
 
   useEffect(() => {
@@ -215,6 +215,18 @@ export default function Customer() {
     },
   ];
 
+  const handleTableChange = (pagination) => {
+    setTableParams({
+      pagination,
+    });
+
+    setFilters((prev) => ({
+      ...prev,
+      page: pagination.current,
+      limit: pagination.pageSize,
+    }));
+  };
+
   return (
     <MainLayout>
       <div className="page_title_container">
@@ -301,6 +313,8 @@ export default function Customer() {
             className="qc_mt_2"
             dataSource={customerTableData}
             columns={columns}
+            pagination={tableParams.pagination}
+            onChange={handleTableChange}
             size="small"
           />
         </div>
