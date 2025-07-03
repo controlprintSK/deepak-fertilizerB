@@ -54,8 +54,6 @@ export default function MainLayout(props) {
   const [defaultSelectedKey, setDefaultSelectedKey] = useState([]);
   const [defaultExpandedKey, setDefaultExpandedKey] = useState([]);
 
-  console.log("userModules :>> ", userModules);
-
   const IconRenderer = ({ iconName }) => {
     const IconComponent = Icons[iconName];
 

@@ -21,7 +21,7 @@ import { ALL_PRODUCT_LIST, GET_COMMON, PRODUCT_LIST } from "@/app/api";
 import { getAPI, postAPI } from "@/utils/apiRequest";
 import { ERROR_MSG_TYPE } from "@/constants/hardData";
 import { displayMessage, interpolate } from "@/utils/common";
-import { DeleteButton, EditButton } from "@/app/components/common/Button";
+import { AddButton, DeleteButton, EditButton } from "@/app/components/common/Button";
 import { useDebounceCallback } from "@/app/components/common/useDebounceCallback";
 const { Search } = Input;
 
@@ -160,7 +160,7 @@ export default function Products() {
         ERROR_MSG_TYPE,
         'An error occurred while fetching the list of product.',
       );
-     }
+    }
   };
 
   useEffect(() => {
@@ -361,6 +361,8 @@ export default function Products() {
                       {/* <Search placeholder="Search Product Code" size="large" onChange={(e) => handleProductCodeChange(e.target.value)} /> */}
                       <Select
                         allowClear
+                        id="productTypeSelect"
+                        data-testid="productTypeSelect"
                         size="large"
                         showSearch
                         placeholder="Search Product Code"
@@ -394,9 +396,14 @@ export default function Products() {
               </Col>
 
               <Col>
-                <Button type="primary" size="large" onClick={handleOpenPage}>
-                  Add Product
-                </Button>
+                <AddButton
+                  text="Add new product"
+                  dataTestid="add-product-btn"
+                  pageId={23}
+                  rightId={3}
+                  _function={handleOpenPage}
+                  _size="large"
+                />
               </Col>
             </Row>
           </div>

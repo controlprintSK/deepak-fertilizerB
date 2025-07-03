@@ -3,7 +3,6 @@ import styles from "@/styles/main-layout/Header.module.scss";
 import { DownOutlined, LogoutOutlined, SyncOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Image, Spin } from "antd";
 import React, { useState } from "react";
-import { signOut } from "next-auth/react";
 import { userClear, userSuccess, userUpdate } from '@/redux/userSlice';
 import { useDispatch } from "react-redux";
 
@@ -13,9 +12,6 @@ export default function Header({ user }) {
 
   const logoutFunction = async () => {
     dispatch(userClear());
-    signOut({
-      callbackUrl: "/login",
-    });
   };
 
   const items = [

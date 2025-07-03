@@ -14,12 +14,15 @@ export const AddButton = ({
   text,
   _function,
   _size,
+  ...props
 }) => {
   const hasAccess = usePageAccess(pageId, [rightId]);
 
   return hasAccess ? (
     <Button
       type="primary"
+      data-testid= {dataTestid}
+      {...props}
       icon={<PlusCircleOutlined />}
       onClick={_function}
       size={_size}
