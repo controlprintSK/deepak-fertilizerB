@@ -327,7 +327,7 @@ export default function MainLayout(props) {
 
   useEffect(() => {
     if (user?.RequiresPasswordReset == 1) {
-      router.push("/user-management/change-password");
+      router.push("/userManagement/change-password");
     }
   }, []);
 

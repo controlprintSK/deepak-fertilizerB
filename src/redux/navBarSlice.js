@@ -11,7 +11,7 @@ const initialState = {
   PAGE_21_ADD: false,
   PAGE_22: false, // Line Manager
   PAGE_23: false, // Sample
-  PAGE_30: false, //Password Policy
+  PAGE_26: false, //Password Policy
   PAGE_31: false, //General Settings
   PAGE_40: false, //User Group
   PAGE_41: false, //Users
@@ -41,7 +41,7 @@ const navBarSlice = createSlice({
       state["PAGE_12_ADD"] = false;
       state["PAGE_22"] = false;
       state["PAGE_23"] = false;
-      state["PAGE_30"] = false;
+      state["PAGE_26"] = false;
       state["PAGE_31"] = false;
       state["PAGE_40"] = false;
       state["PAGE_41"] = false;
@@ -67,7 +67,7 @@ const navBarSlice = createSlice({
       state["PAGE_12_ADD"] = false;
       state["PAGE_22"] = false;
       state["PAGE_23"] = false;
-      state["PAGE_30"] = false;
+      state["PAGE_26"] = false;
       state["PAGE_31"] = false;
       state["PAGE_40"] = false;
       state["PAGE_41"] = false;

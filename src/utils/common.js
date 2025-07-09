@@ -15,6 +15,8 @@ import { LIST_COMPANY, USER_ROLE } from "@/app/api";
 import { allPageRights } from "@/redux/rightSlice";
 import store from "@/store/index";
 
+export default function Myfunc() {}
+
 export const interpolate = function (theString, argumentArray) {
   const regex = /%s/;
   const _r = function (p, c) {

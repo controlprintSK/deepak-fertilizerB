@@ -63,7 +63,7 @@ export default function CustomerAdd() {
   const [slug, setSlug] = useState([]);
 
   const handleBackToList = () => {
-    redirect("/master/customerMaster");
+    router.push("/master/customerMaster");
   };
 
   useEffect(() => {
